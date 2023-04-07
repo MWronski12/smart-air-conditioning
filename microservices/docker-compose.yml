@@ -1,0 +1,36 @@
+version: "3"
+services:
+
+  app_service:
+    build:
+      context: .
+      dockerfile: app_service/Dockerfile
+    ports:
+      - "8000:8000"
+
+  mqtt_service:
+    build:
+      context: .
+      dockerfile: mqtt/Dockerfile
+    ports:
+      - "8001:8000"
+    depends_on:
+      - app_service
+
+  influxdb_service:
+    build:
+      context: .
+      dockerfile: influxdb/Dockerfile
+    ports:
+      - "8002:8000"
+    depends_on:
+      - app_service
+
+  logic_service:
+    build:
+      context: .
+      dockerfile: logic/Dockerfile
+    ports:
+      - "8003:8000"
+    depends_on:
+      - app_service

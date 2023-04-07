@@ -1,5 +1,2 @@
 MQTT_HOST = "localhost"
 MQTT_PORT = 1883
-
-INFLUXDB_HOST = "localhost"
-INFLUXDB_PORT = 8086

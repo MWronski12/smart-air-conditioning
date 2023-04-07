@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 import requests
 
-from config import *
+from .config import *
 
 
 class MqttClient:
@@ -28,14 +28,8 @@ class MqttClient:
         data_type = topic_parts[4]
         data_value = message.payload.decode()
 
-        # Send request to InfluxDB microservice
-        url = f"http://{INFLUXDB_HOST}:{INFLUXDB_PORT}/write"
-        data = f"sensor_data,room_id={room_id},device_id={device_id},data_type={data_type} value={data_value}"
-        response = requests.post(url, data=data)
-        if response.status_code == 200:
-            print("Data saved to InfluxDB")
-        else:
-            print(f"Failed to save data to InfluxDB: {response.text}")
+        # Send request to InfluxDB microservice, using gRPC
+        
 
     def subscribe(self, topic):
         self.client.subscribe(topic)
