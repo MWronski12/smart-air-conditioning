@@ -4,7 +4,7 @@ import "google/protobuf/empty.proto";
 
 package influxdb;
 
-service MqttService {
+service InfluxdbService {
     rpc WriteMeasurement (Measurement) returns (google.protobuf.Empty) {}
     rpc ReadMeasurements (Measurement) returns (stream Measurement) {}
 }

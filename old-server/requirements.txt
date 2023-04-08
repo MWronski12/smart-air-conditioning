@@ -1,5 +1,0 @@
-fastapi
-uvicorn
-paho-mqtt
-influxdb-client
-firebase-admin
