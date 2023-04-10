@@ -32,7 +32,15 @@ class DatabaseRepository(ABC):
         pass
 
     @abstractmethod
-    def add_user_to_room(self, room_id: str, user_id: str) -> Dict[str, Any]:
+    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> None:
+        pass
+
+    @abstractmethod
+    def add_user_to_room(self, user_id: str, room_id: str) -> None:
+        pass
+
+    @abstractmethod
+    def remove_user_from_room(self, user_id: str, room_id: str) -> None:
         pass
 
     @abstractmethod

@@ -1,14 +1,9 @@
 FROM python:3.10-alpine
 
-COPY database/ /app/database/
-COPY protos/ /app/protos/
-COPY requirements.txt /app/
+COPY . /database_service
+
+WORKDIR /database_service
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app/database
-
-RUN pip install --no-cache-dir -r requirements.txt
-RUN python -m grpc_tools.protoc -I../protos --python_out=. --grpc_python_out=. ../protos/*.proto
-
-CMD [ "python", "./main.py" ]
+CMD [ "python3", "main.py" ]

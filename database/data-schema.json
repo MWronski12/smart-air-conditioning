@@ -1,0 +1,32 @@
+{
+    "rooms": {
+        "room_id": {
+            "name": "Room name"
+        }
+    },
+    "devices": {
+        "device_id": {
+            "name": "Device name"
+        }
+    },
+    "users": {
+        "user_id": {
+            "name": "User name",
+            "email": "User email",
+            "preferences": {
+                "temperature": "User temperature preference",
+                "fan_speed": "User fan speed preference"
+            }
+        }
+    },
+    "rooms_users": {
+        "room_id": {
+            "user_id": true
+        }
+    },
+    "rooms_devices": {
+        "room_id": {
+            "device_id": true
+        }
+    }
+}

@@ -1,6 +1,6 @@
-from app import app
+from app import serve
+from app.fake_repository import FakeRepository
 
 if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run("main:app", host="localhost", port=8000, reload=True)
+    repository = FakeRepository()
+    serve(repository=repository)

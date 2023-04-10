@@ -1,74 +1,135 @@
 import firebase_admin
 from firebase_admin import credentials, db
-from typing import List, Dict, Any
+from typing import Dict, List, Optional, Any
 
 from .database_repository import DatabaseRepository
+from .exceptions import *
 
 
-class FirebaseSmartAcRepository(DatabaseRepository):
+class FirebaseRepository(DatabaseRepository):
     def __init__(self):
         cred = credentials.Certificate("path/to/serviceAccountKey.json")
         firebase_admin.initialize_app(cred, {"databaseURL": "https://your-project.firebaseio.com"})
 
     def add_room(self, room: Dict[str, Any]) -> Dict[str, Any]:
-        ref = db.reference(f"project/rooms/{room_id}")
-        ref.set({"name": name})
+        ref = db.reference(f"rooms/{room['id']}")
+        if ref.get() is not None:
+            raise RoomAlreadyExistsError(f"Room {room['id']} already exists")
 
-    def get_room(self, room_id: str) -> Dict[str, Any]:
-        ref = db.reference(f"project/rooms/{room_id}")
-        return ref.get()
+        ref.set({"name": room["name"]})
+        return room
 
-    def create_user(self, user_id: str, name: str, email: str):
-        ref = db.reference(f"project/users/{user_id}")
-        ref.set(
-            {
-                "name": name,
-                "email": email,
-                "preferences": {
-                    "temperature": None,
-                    "fan_speed": None,
-                },
-            }
-        )
+    def get_room(self, room_id: str) -> Optional[Dict[str, Any]]:
+        ref = db.reference(f"rooms/{room_id}")
+        room = ref.get()
+        if room is None:
+            raise RoomNotFoundError(f"Room {room_id} does not exist")
 
-    def get_user(self, user_id: str) -> Dict[str, Any]:
-        ref = db.reference(f"project/users/{user_id}")
-        return ref.get()
-
-    def create_device(self, device_id: str, name: str, type_: str, user_id: str, room_id: str, status: str):
-        ref = db.reference(f"project/rooms/{room_id}/devices/{device_id}")
-        ref.set(
-            {
-                "name": name,
-                "type": type_,
-                "user_id": user_id,
-                "status": status,
-            }
-        )
-
-    def get_device(self, device_id: str) -> Dict[str, Any]:
-        ref = db.reference(f"project/rooms")
-        rooms = ref.get()
-        for room_id in rooms:
-            devices = rooms[room_id]["devices"]
-            if device_id in devices:
-                return devices[device_id]
-
-    def get_users_in_room(self, room_id: str) -> List[Dict[str, Any]]:
-        ref = db.reference(f"project/room_users/{room_id}")
-        users = ref.get()
-        return [{"id": user_id, **user} for user_id, user in users.items()]
-
-    def add_user_to_room(self, user_id: str, room_id: str):
-        ref = db.reference(f"project/room_users/{room_id}/{user_id}")
-        ref.set(True)
+        return {"id": room_id, "name": room["name"]}
 
     def get_all_rooms(self) -> List[Dict[str, Any]]:
-        ref = db.reference(f"project/rooms")
+        ref = db.reference(f"rooms")
         rooms = ref.get()
-        return [{"id": room_id, **room} for room_id, room in rooms.items()]
+        return [{"id": room_id, "name": room["name"]} for room_id, room in rooms.items()]
+
+    def add_device(self, room_id: str, device: Dict[str, Any]) -> Dict[str, Any]:
+        ref = db.reference(f"devices/{device['id']}")
+
+        # Check if device already exists
+        if ref.get() is not None:
+            raise DeviceAlreadyExistsError(f"Device {device['id']} already exists")
+
+        # Check if room exists
+        ref = db.reference(f"rooms/{room_id}")
+        if ref.get() is None:
+            raise RoomNotFoundError(f"Room {room_id} does not exist")
+
+        ref.set({"name": device["name"]})
+        ref = db.reference(f"rooms_devices/{room_id}/{device['id']}")
+        ref.set(True)
+
+        return device
 
     def get_devices_in_room(self, room_id: str) -> List[Dict[str, Any]]:
-        ref = db.reference(f"project/rooms/{room_id}/devices")
-        devices = ref.get()
-        return [{"id": device_id, **device} for device_id, device in devices.items()]
+        ref = db.reference(f"rooms_devices/{room_id}")
+        if ref.get() is None:
+            raise RoomNotFoundError(f"Room {room_id} does not exist")
+
+        dev_ids = ref.get()
+        devices = []
+        for dev_id in dev_ids:
+            ref = db.reference(f"devices/{dev_id}")
+            device = ref.get()
+            devices.append(device)
+
+        return devices
+
+    def add_user(self, user: Dict[str, Any]) -> Dict[str, Any]:
+        ref = db.reference(f"users/{user['id']}")
+        if ref.get() is not None:
+            raise UserAlreadyExistsError(f"User {user['id']} already exists")
+
+        ref.set({"name": user["name"]})
+        if "preferences" in user:
+            ref = db.reference(f"users/{user['id']}")
+            ref.set(user["preferences"])
+
+        return {"id": user["id"], "name": user["name"]}
+
+    def get_user(self, user_id: str) -> Optional[Dict[str, Any]]:
+        ref = db.reference(f"users/{user_id}")
+        user = ref.get()
+        if user is None:
+            raise UserNotFoundError(f"User {user_id} does not exist")
+
+        return {"id": user_id, "name": user["name"]}
+
+    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> None:
+        ref = db.reference(f"users/{user_id}")
+        if ref.get() is None:
+            raise UserNotFoundError(f"User {user_id} does not exist")
+
+        ref.set(preferences)
+
+    def add_user_to_room(self, user_id: str, room_id: str) -> None:
+        # Check if user exists
+        ref = db.reference(f"users/{user_id}")
+        if ref.get() is None:
+            raise UserNotFoundError(f"User {user_id} does not exist")
+
+        # Check if room exists
+        ref = db.reference(f"rooms/{room_id}")
+        if ref.get() is None:
+            raise RoomNotFoundError(f"Room {room_id} does not exist")
+
+        ref = db.reference(f"room_users/{room_id}/{user_id}")
+        ref.set(True)
+
+    def remove_user_from_room(self, user_id: str, room_id: str) -> None:
+        # Check if user exists
+        ref = db.reference(f"users/{user_id}")
+        if ref.get() is None:
+            raise UserNotFoundError(f"User {user_id} does not exist")
+
+        # Check if room exists
+        ref = db.reference(f"rooms/{room_id}")
+        if ref.get() is None:
+            raise RoomNotFoundError(f"Room {room_id} does not exist")
+
+        ref = db.reference(f"room_users/{room_id}/{user_id}")
+        ref.delete()
+
+    def get_users_in_room(self, room_id: str) -> List[Dict[str, Any]]:
+        # Check if room exists
+        ref = db.reference(f"rooms/{room_id}")
+        if ref.get() is None:
+            raise RoomNotFoundError(f"Room {room_id} does not exist")
+
+        ref = db.reference(f"room_users/{room_id}")
+        user_ids = ref.get()
+        users = []
+        for user_id in user_ids:
+            ref = db.reference(f"users/{user_id}")
+            user = ref.get()
+            users.append(user)
+        return users
