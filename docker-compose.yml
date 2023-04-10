@@ -3,34 +3,34 @@ services:
 
   app_service:
     build:
-      context: .
-      dockerfile: app_service/Dockerfile
+      context: app_service
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8000:50051"
 
   mqtt_service:
     build:
-      context: .
-      dockerfile: mqtt/Dockerfile
+      context: mqtt
+      dockerfile: Dockerfile
     ports:
-      - "8001:8000"
+      - "8001:50051"
     depends_on:
       - app_service
 
   influxdb_service:
     build:
-      context: .
-      dockerfile: influxdb/Dockerfile
+      context: influxdb
+      dockerfile: Dockerfile
     ports:
-      - "8002:8000"
+      - "8002:50051"
     depends_on:
       - app_service
 
   logic_service:
     build:
-      context: .
-      dockerfile: logic/Dockerfile
+      context: logic
+      dockerfile: Dockerfile
     ports:
-      - "8003:8000"
+      - "8003:50051"
     depends_on:
       - app_service
