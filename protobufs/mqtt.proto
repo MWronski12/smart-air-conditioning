@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package mqtt;
+
+service MqttService {
+  rpc PublishDeviceSettings (Settings) returns (google.protobuf.Empty) {}
+}
+
+message Settings {
+  string room_id = 1;
+  string device_id = 2;
+  float temperature = 3;
+  uint32 fan_speed = 4; // 0-100
+}
+
+message PublishDeviceSettingsRequest {
+  Settings settings = 1;
+}

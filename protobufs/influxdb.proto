@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package influxdb;
+
+service InfluxdbService {
+  rpc WriteMeasurement (WriteMeasurementRequest) returns (google.protobuf.Empty) {}
+  rpc ReadMeasurements (ReadMeasurementsRequest) returns (ReadMeasurementsResponse) {}
+}
+
+message Measurement {
+  string room_id = 1;
+  string device_id = 2;
+  float temperature = 3;
+  float humidity = 4;
+}
+
+
+message WriteMeasurementRequest {
+  Measurement measurement = 1;
+}
+
+message ReadMeasurementsRequest {
+  string room_id = 1;
+  string device_id = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
+  bool has_temperature = 5;
+  bool has_humidity = 6;
+}
+
+message ReadMeasurementsResponse {
+  repeated Measurement measurement = 1;
+}
