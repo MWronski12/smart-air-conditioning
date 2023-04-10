@@ -1,6 +1,4 @@
-from app import app
+from app import serve
 
 if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run("main:app", host="localhost", port=8000, reload=True)
+    serve()
