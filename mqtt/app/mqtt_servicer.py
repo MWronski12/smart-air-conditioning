@@ -1,7 +1,6 @@
 import grpc
-import mqtt_pb2
-import mqtt_pb2_grpc
 
+from protos import mqtt_pb2, mqtt_pb2_grpc
 from .mqtt import MqttClient
 from .config import MQTT_HOST, MQTT_PORT
 
