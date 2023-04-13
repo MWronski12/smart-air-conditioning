@@ -1,9 +1,13 @@
 #!/usr/bin/bash
 
+set -e
+
 mkdir -p protos
 
-# generate gRPC code from directory protos into directory protos
 source venv/bin/activate
+pip install -r requirements.txt
+
+# generate gRPC code from directory protobufs into directory protos
 python3 -m grpc_tools.protoc -Iapp/protos=./protobufs --python_out=protos --grpc_python_out=protos --pyi_out=protos protobufs/*.proto
 
 # update directories if needed
