@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
-import requests
+import grpc
 
+from .protos import influxdb_pb2, influxdb_pb2_grpc
 from .config import *
 
 
@@ -21,15 +22,20 @@ class MqttClient:
         print("Connected with result code " + str(rc))
 
     def on_message(self, client, userdata, message):
-        # Parse topic and payload
-        topic_parts = message.topic.split("/")
-        room_id = topic_parts[1]
-        device_id = topic_parts[2]
-        data_type = topic_parts[4]
-        data_value = message.payload.decode()
+        # Topic format:
+        # pbl6/<room_id>/<device_id>/sensor/<data_type>
+        # data_type: humidity, temperature
 
-        # Send request to InfluxDB microservice, using gRPC
-        
+        topic = message.topic.split("/")
+        payload = message.payload.decode("utf-8")
+
+        room_id = topic[1]
+        device_id = topic[2]
+        data_type = topic[4]
+
+        channel = grpc.insecure_channel("localhost:50051")
+        stub = influxdb_pb2_grpc.InfluxdbServiceStub(channel)
+        stub.WriteMeasurement()
 
     def subscribe(self, topic):
         self.client.subscribe(topic)
