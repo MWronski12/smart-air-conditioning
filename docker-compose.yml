@@ -1,21 +1,12 @@
 version: "3"
 services:
 
-  app_service:
+  database_service:
     build:
-      context: app_service
+      context: database
       dockerfile: Dockerfile
     ports:
       - "8000:50051"
-
-  mqtt_service:
-    build:
-      context: mqtt
-      dockerfile: Dockerfile
-    ports:
-      - "8001:50051"
-    depends_on:
-      - app_service
 
   influxdb_service:
     build:
@@ -23,14 +14,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8002:50051"
-    depends_on:
-      - app_service
 
-  logic_service:
+  mqtt_service:
     build:
-      context: logic
+      context: mqtt
       dockerfile: Dockerfile
     ports:
-      - "8003:50051"
-    depends_on:
-      - app_service
+      - "8001:50051"
+
+  user_api:
+    build:
+      context: user_api
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8000"

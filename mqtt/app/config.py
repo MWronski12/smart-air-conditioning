@@ -1,2 +1,2 @@
-MQTT_HOST = "localhost"
+MQTT_HOST = "test.mosquitto.org"
 MQTT_PORT = 1883

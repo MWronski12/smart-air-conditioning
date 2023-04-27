@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import grpc
+import logging
 
 from .protos import influxdb_pb2, influxdb_pb2_grpc
 from .config import *
@@ -10,16 +11,20 @@ class MqttClient:
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
+        self.client.on_disconnect = self.on_disconnect
         self.username = username
         self.password = password
+        self.connect()
 
     def connect(self):
-        self.client.username_pw_set(self.username, self.password)
         self.client.connect(MQTT_HOST, MQTT_PORT)
         self.client.loop_start()
 
     def on_connect(self, client, userdata, flags, rc):
-        print("Connected with result code " + str(rc))
+        logging.info(f"Connected to {MQTT_HOST}:{MQTT_PORT} with result code {rc}")
+
+    def on_disconnect(self, client, userdata, rc):
+        logging.info(f"Disconnected from {MQTT_HOST}:{MQTT_PORT} with result code {rc}")
 
     def on_message(self, client, userdata, message):
         # Topic format:
@@ -33,7 +38,11 @@ class MqttClient:
         device_id = topic[2]
         data_type = topic[4]
 
-        channel = grpc.insecure_channel("localhost:50051")
+        logging.info(
+            f"Received message from {room_id}/{device_id}/{data_type}: {payload}"
+        )
+
+        channel = grpc.insecure_channel("influxdb_service:50051")
         stub = influxdb_pb2_grpc.InfluxdbServiceStub(channel)
         stub.WriteMeasurement()
 
@@ -41,7 +50,7 @@ class MqttClient:
         self.client.subscribe(topic)
 
     def publish(self, topic, payload):
-        self.client.publish(topic, payload)
+        self.client.publish(topic=topic, payload=payload)
 
     def disconnect(self):
         self.client.loop_stop()

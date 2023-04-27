@@ -3,7 +3,6 @@
 import grpc
 
 from app.protos import influxdb_pb2 as app_dot_protos_dot_influxdb__pb2
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class InfluxdbServiceStub(object):
@@ -18,7 +17,7 @@ class InfluxdbServiceStub(object):
         self.WriteMeasurement = channel.unary_unary(
                 '/influxdb.InfluxdbService/WriteMeasurement',
                 request_serializer=app_dot_protos_dot_influxdb__pb2.WriteMeasurementRequest.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                response_deserializer=app_dot_protos_dot_influxdb__pb2.WriteMeasurementResponse.FromString,
                 )
         self.ReadMeasurements = channel.unary_unary(
                 '/influxdb.InfluxdbService/ReadMeasurements',
@@ -48,7 +47,7 @@ def add_InfluxdbServiceServicer_to_server(servicer, server):
             'WriteMeasurement': grpc.unary_unary_rpc_method_handler(
                     servicer.WriteMeasurement,
                     request_deserializer=app_dot_protos_dot_influxdb__pb2.WriteMeasurementRequest.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                    response_serializer=app_dot_protos_dot_influxdb__pb2.WriteMeasurementResponse.SerializeToString,
             ),
             'ReadMeasurements': grpc.unary_unary_rpc_method_handler(
                     servicer.ReadMeasurements,
@@ -78,7 +77,7 @@ class InfluxdbService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/influxdb.InfluxdbService/WriteMeasurement',
             app_dot_protos_dot_influxdb__pb2.WriteMeasurementRequest.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            app_dot_protos_dot_influxdb__pb2.WriteMeasurementResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

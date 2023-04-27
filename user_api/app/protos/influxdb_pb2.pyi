@@ -45,3 +45,7 @@ class WriteMeasurementRequest(_message.Message):
     MEASUREMENT_FIELD_NUMBER: _ClassVar[int]
     measurement: Measurement
     def __init__(self, measurement: _Optional[_Union[Measurement, _Mapping]] = ...) -> None: ...
+
+class WriteMeasurementResponse(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...

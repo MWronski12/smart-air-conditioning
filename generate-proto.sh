@@ -11,7 +11,7 @@ pip install -r requirements.txt
 python3 -m grpc_tools.protoc -Iapp/protos=./protobufs --python_out=protos --grpc_python_out=protos --pyi_out=protos protobufs/*.proto
 
 # update directories if needed
-directories="app_service database influxdb logic mqtt user_api"
+directories="database influxdb logic mqtt user_api"
 
 for dir in $directories; do
     mkdir -p "$dir/app/protos"

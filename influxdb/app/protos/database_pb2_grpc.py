@@ -27,7 +27,7 @@ class DatabaseServiceStub(object):
                 )
         self.GetAllRooms = channel.unary_unary(
                 '/database.DatabaseService/GetAllRooms',
-                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                request_serializer=app_dot_protos_dot_database__pb2.GetAllRoomsRequest.SerializeToString,
                 response_deserializer=app_dot_protos_dot_database__pb2.GetAllRoomsResponse.FromString,
                 )
         self.AddDevice = channel.unary_unary(
@@ -156,7 +156,7 @@ def add_DatabaseServiceServicer_to_server(servicer, server):
             ),
             'GetAllRooms': grpc.unary_unary_rpc_method_handler(
                     servicer.GetAllRooms,
-                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    request_deserializer=app_dot_protos_dot_database__pb2.GetAllRoomsRequest.FromString,
                     response_serializer=app_dot_protos_dot_database__pb2.GetAllRoomsResponse.SerializeToString,
             ),
             'AddDevice': grpc.unary_unary_rpc_method_handler(
@@ -255,7 +255,7 @@ class DatabaseService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/database.DatabaseService/GetAllRooms',
-            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            app_dot_protos_dot_database__pb2.GetAllRoomsRequest.SerializeToString,
             app_dot_protos_dot_database__pb2.GetAllRoomsResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

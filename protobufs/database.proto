@@ -8,7 +8,7 @@ package database;
 service DatabaseService {
   rpc AddRoom (AddRoomRequest) returns (AddRoomResponse) {}
   rpc GetRoom (GetRoomRequest) returns (GetRoomResponse) {}
-  rpc GetAllRooms (google.protobuf.Empty) returns (GetAllRoomsResponse) {}
+  rpc GetAllRooms (GetAllRoomsRequest) returns (GetAllRoomsResponse) {}
 
   rpc AddDevice (AddDeviceRequest) returns (AddDeviceResponse) {}
   rpc GetDevicesInRoom (GetDevicesInRoomRequest) returns (GetDevicesInRoomResponse) {}
@@ -37,6 +37,7 @@ message Device {
 message Preference {
   float temperature = 1;
   int32 fan_speed = 2;
+  string room_id = 3;
 }
 
 message User {
@@ -63,6 +64,9 @@ message GetRoomRequest {
 
 message GetRoomResponse {
   Room room = 1;
+}
+
+message GetAllRoomsRequest {
 }
 
 message GetAllRoomsResponse {

@@ -4,6 +4,6 @@ from .RoomSchema import RoomSchema
 
 
 class DeviceSchema(BaseModel):
-    id: int
+    id: str
     name: Optional[str]
-    room: Optional[RoomSchema]
+    room: Optional[str]

@@ -5,7 +5,7 @@ import "google/protobuf/empty.proto";
 package influxdb;
 
 service InfluxdbService {
-  rpc WriteMeasurement (WriteMeasurementRequest) returns (google.protobuf.Empty) {}
+  rpc WriteMeasurement (WriteMeasurementRequest) returns (WriteMeasurementResponse) {}
   rpc ReadMeasurements (ReadMeasurementsRequest) returns (ReadMeasurementsResponse) {}
 }
 
@@ -19,6 +19,9 @@ message Measurement {
 
 message WriteMeasurementRequest {
   Measurement measurement = 1;
+}
+
+message WriteMeasurementResponse {
 }
 
 message ReadMeasurementsRequest {
