@@ -11,26 +11,25 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19\x61pp/protos/influxdb.proto\x12\x08influxdb\x1a\x1bgoogle/protobuf/empty.proto\"X\n\x0bMeasurement\x12\x0f\n\x07room_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x13\n\x0btemperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\"E\n\x17WriteMeasurementRequest\x12*\n\x0bmeasurement\x18\x01 \x01(\x0b\x32\x15.influxdb.Measurement\"\x1a\n\x18WriteMeasurementResponse\"\x92\x01\n\x17ReadMeasurementsRequest\x12\x0f\n\x07room_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x12\n\nstart_time\x18\x03 \x01(\x03\x12\x10\n\x08\x65nd_time\x18\x04 \x01(\x03\x12\x17\n\x0fhas_temperature\x18\x05 \x01(\x08\x12\x14\n\x0chas_humidity\x18\x06 \x01(\x08\"F\n\x18ReadMeasurementsResponse\x12*\n\x0bmeasurement\x18\x01 \x03(\x0b\x32\x15.influxdb.Measurement2\xcb\x01\n\x0fInfluxdbService\x12[\n\x10WriteMeasurement\x12!.influxdb.WriteMeasurementRequest\x1a\".influxdb.WriteMeasurementResponse\"\x00\x12[\n\x10ReadMeasurements\x12!.influxdb.ReadMeasurementsRequest\x1a\".influxdb.ReadMeasurementsResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19\x61pp/protos/influxdb.proto\x12\x08influxdb\"X\n\x0bMeasurement\x12\x0f\n\x07room_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x13\n\x0btemperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\"E\n\x17WriteMeasurementRequest\x12*\n\x0bmeasurement\x18\x01 \x01(\x0b\x32\x15.influxdb.Measurement\"\x1a\n\x18WriteMeasurementResponse\"\x92\x01\n\x17ReadMeasurementsRequest\x12\x0f\n\x07room_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x12\n\nstart_time\x18\x03 \x01(\x03\x12\x10\n\x08\x65nd_time\x18\x04 \x01(\x03\x12\x17\n\x0fhas_temperature\x18\x05 \x01(\x08\x12\x14\n\x0chas_humidity\x18\x06 \x01(\x08\"F\n\x18ReadMeasurementsResponse\x12*\n\x0bmeasurement\x18\x01 \x03(\x0b\x32\x15.influxdb.Measurement2\xcb\x01\n\x0fInfluxdbService\x12[\n\x10WriteMeasurement\x12!.influxdb.WriteMeasurementRequest\x1a\".influxdb.WriteMeasurementResponse\"\x00\x12[\n\x10ReadMeasurements\x12!.influxdb.ReadMeasurementsRequest\x1a\".influxdb.ReadMeasurementsResponse\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'app.protos.influxdb_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _MEASUREMENT._serialized_start=68
-  _MEASUREMENT._serialized_end=156
-  _WRITEMEASUREMENTREQUEST._serialized_start=158
-  _WRITEMEASUREMENTREQUEST._serialized_end=227
-  _WRITEMEASUREMENTRESPONSE._serialized_start=229
-  _WRITEMEASUREMENTRESPONSE._serialized_end=255
-  _READMEASUREMENTSREQUEST._serialized_start=258
-  _READMEASUREMENTSREQUEST._serialized_end=404
-  _READMEASUREMENTSRESPONSE._serialized_start=406
-  _READMEASUREMENTSRESPONSE._serialized_end=476
-  _INFLUXDBSERVICE._serialized_start=479
-  _INFLUXDBSERVICE._serialized_end=682
+  _MEASUREMENT._serialized_start=39
+  _MEASUREMENT._serialized_end=127
+  _WRITEMEASUREMENTREQUEST._serialized_start=129
+  _WRITEMEASUREMENTREQUEST._serialized_end=198
+  _WRITEMEASUREMENTRESPONSE._serialized_start=200
+  _WRITEMEASUREMENTRESPONSE._serialized_end=226
+  _READMEASUREMENTSREQUEST._serialized_start=229
+  _READMEASUREMENTSREQUEST._serialized_end=375
+  _READMEASUREMENTSRESPONSE._serialized_start=377
+  _READMEASUREMENTSRESPONSE._serialized_end=447
+  _INFLUXDBSERVICE._serialized_start=450
+  _INFLUXDBSERVICE._serialized_end=653
 # @@protoc_insertion_point(module_scope)

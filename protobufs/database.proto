@@ -17,8 +17,8 @@ service DatabaseService {
   rpc GetUser (GetUserRequest) returns (GetUserResponse) {}
   rpc SetUserPreferences (SetUserPreferencesRequest) returns (google.protobuf.Empty) {}
 
-  rpc AddUserToRoom (AddUserToRoomRequest) returns (google.protobuf.Empty) {}
-  rpc RemoveUserFromRoom (RemoveUserFromRoomRequest) returns (google.protobuf.Empty) {}
+  rpc AddUserToRoom (AddUserToRoomRequest) returns (AddUserToRoomResponse) {}
+  rpc RemoveUserFromRoom (RemoveUserFromRoomRequest) returns (RemoveUserFromRoomResponse) {}
   rpc GetUsersInRoom (GetUsersInRoomRequest) returns (GetUsersInRoomResponse) {}
 }
 
@@ -42,7 +42,7 @@ message Preference {
 
 message User {
   string id = 1;
-  string name = 2;
+  string email = 2;
   optional Preference preferences = 3;
 }
 
@@ -120,9 +120,17 @@ message AddUserToRoomRequest {
   string room_id = 2;
 }
 
+message AddUserToRoomResponse {
+  string user_id = 1;
+}
+
 message RemoveUserFromRoomRequest {
   string user_id = 1;
   string room_id = 2;
+}
+
+message RemoveUserFromRoomResponse {
+  string user_id = 1;
 }
 
 message GetUsersInRoomRequest {

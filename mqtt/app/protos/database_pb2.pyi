@@ -52,6 +52,12 @@ class AddUserToRoomRequest(_message.Message):
     user_id: str
     def __init__(self, user_id: _Optional[str] = ..., room_id: _Optional[str] = ...) -> None: ...
 
+class AddUserToRoomResponse(_message.Message):
+    __slots__ = ["user_id"]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ...) -> None: ...
+
 class Device(_message.Message):
     __slots__ = ["id", "name"]
     ID_FIELD_NUMBER: _ClassVar[int]
@@ -136,6 +142,12 @@ class RemoveUserFromRoomRequest(_message.Message):
     user_id: str
     def __init__(self, user_id: _Optional[str] = ..., room_id: _Optional[str] = ...) -> None: ...
 
+class RemoveUserFromRoomResponse(_message.Message):
+    __slots__ = ["user_id"]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ...) -> None: ...
+
 class Room(_message.Message):
     __slots__ = ["id", "name"]
     ID_FIELD_NUMBER: _ClassVar[int]
@@ -153,11 +165,11 @@ class SetUserPreferencesRequest(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., preferences: _Optional[_Union[Preference, _Mapping]] = ...) -> None: ...
 
 class User(_message.Message):
-    __slots__ = ["id", "name", "preferences"]
+    __slots__ = ["email", "id", "preferences"]
+    EMAIL_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
-    NAME_FIELD_NUMBER: _ClassVar[int]
     PREFERENCES_FIELD_NUMBER: _ClassVar[int]
+    email: str
     id: str
-    name: str
     preferences: Preference
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., preferences: _Optional[_Union[Preference, _Mapping]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., email: _Optional[str] = ..., preferences: _Optional[_Union[Preference, _Mapping]] = ...) -> None: ...

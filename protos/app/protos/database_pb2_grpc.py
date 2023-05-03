@@ -58,12 +58,12 @@ class DatabaseServiceStub(object):
         self.AddUserToRoom = channel.unary_unary(
                 '/database.DatabaseService/AddUserToRoom',
                 request_serializer=app_dot_protos_dot_database__pb2.AddUserToRoomRequest.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                response_deserializer=app_dot_protos_dot_database__pb2.AddUserToRoomResponse.FromString,
                 )
         self.RemoveUserFromRoom = channel.unary_unary(
                 '/database.DatabaseService/RemoveUserFromRoom',
                 request_serializer=app_dot_protos_dot_database__pb2.RemoveUserFromRoomRequest.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                response_deserializer=app_dot_protos_dot_database__pb2.RemoveUserFromRoomResponse.FromString,
                 )
         self.GetUsersInRoom = channel.unary_unary(
                 '/database.DatabaseService/GetUsersInRoom',
@@ -187,12 +187,12 @@ def add_DatabaseServiceServicer_to_server(servicer, server):
             'AddUserToRoom': grpc.unary_unary_rpc_method_handler(
                     servicer.AddUserToRoom,
                     request_deserializer=app_dot_protos_dot_database__pb2.AddUserToRoomRequest.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                    response_serializer=app_dot_protos_dot_database__pb2.AddUserToRoomResponse.SerializeToString,
             ),
             'RemoveUserFromRoom': grpc.unary_unary_rpc_method_handler(
                     servicer.RemoveUserFromRoom,
                     request_deserializer=app_dot_protos_dot_database__pb2.RemoveUserFromRoomRequest.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                    response_serializer=app_dot_protos_dot_database__pb2.RemoveUserFromRoomResponse.SerializeToString,
             ),
             'GetUsersInRoom': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUsersInRoom,
@@ -358,7 +358,7 @@ class DatabaseService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/database.DatabaseService/AddUserToRoom',
             app_dot_protos_dot_database__pb2.AddUserToRoomRequest.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            app_dot_protos_dot_database__pb2.AddUserToRoomResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -375,7 +375,7 @@ class DatabaseService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/database.DatabaseService/RemoveUserFromRoom',
             app_dot_protos_dot_database__pb2.RemoveUserFromRoomRequest.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            app_dot_protos_dot_database__pb2.RemoveUserFromRoomResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
