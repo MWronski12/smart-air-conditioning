@@ -3,7 +3,6 @@
 import grpc
 
 from app.protos import mqtt_pb2 as app_dot_protos_dot_mqtt__pb2
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class MqttServiceStub(object):
@@ -17,8 +16,8 @@ class MqttServiceStub(object):
         """
         self.PublishDeviceSettings = channel.unary_unary(
                 '/mqtt.MqttService/PublishDeviceSettings',
-                request_serializer=app_dot_protos_dot_mqtt__pb2.Settings.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                request_serializer=app_dot_protos_dot_mqtt__pb2.PublishDeviceSettingsRequest.SerializeToString,
+                response_deserializer=app_dot_protos_dot_mqtt__pb2.PublishDeviceSettingsResponse.FromString,
                 )
 
 
@@ -36,8 +35,8 @@ def add_MqttServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'PublishDeviceSettings': grpc.unary_unary_rpc_method_handler(
                     servicer.PublishDeviceSettings,
-                    request_deserializer=app_dot_protos_dot_mqtt__pb2.Settings.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                    request_deserializer=app_dot_protos_dot_mqtt__pb2.PublishDeviceSettingsRequest.FromString,
+                    response_serializer=app_dot_protos_dot_mqtt__pb2.PublishDeviceSettingsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -61,7 +60,7 @@ class MqttService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/mqtt.MqttService/PublishDeviceSettings',
-            app_dot_protos_dot_mqtt__pb2.Settings.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            app_dot_protos_dot_mqtt__pb2.PublishDeviceSettingsRequest.SerializeToString,
+            app_dot_protos_dot_mqtt__pb2.PublishDeviceSettingsResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

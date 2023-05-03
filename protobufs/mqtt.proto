@@ -1,11 +1,9 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-
 package mqtt;
 
 service MqttService {
-  rpc PublishDeviceSettings (Settings) returns (google.protobuf.Empty) {}
+  rpc PublishDeviceSettings (PublishDeviceSettingsRequest) returns (PublishDeviceSettingsResponse) {}
 }
 
 message Settings {
@@ -17,4 +15,8 @@ message Settings {
 
 message PublishDeviceSettingsRequest {
   Settings settings = 1;
+}
+
+message PublishDeviceSettingsResponse {
+  string message = 1;
 }

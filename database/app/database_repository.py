@@ -8,7 +8,7 @@ class DatabaseRepository(ABC):
         pass
 
     @abstractmethod
-    def get_room(self, room_id: str) -> Optional[Dict[str, Any]]:
+    def get_room(self, room_id: str) -> Dict[str, Any]:
         pass
 
     @abstractmethod
@@ -28,11 +28,11 @@ class DatabaseRepository(ABC):
         pass
 
     @abstractmethod
-    def get_user(self, user_id: str) -> Optional[Dict[str, Any]]:
+    def get_user(self, user_id: str) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> None:
+    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod

@@ -1,4 +1,3 @@
-from google.protobuf import empty_pb2 as _empty_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
@@ -163,6 +162,12 @@ class SetUserPreferencesRequest(_message.Message):
     preferences: Preference
     user_id: str
     def __init__(self, user_id: _Optional[str] = ..., preferences: _Optional[_Union[Preference, _Mapping]] = ...) -> None: ...
+
+class SetUserPreferencesResponse(_message.Message):
+    __slots__ = ["preferences"]
+    PREFERENCES_FIELD_NUMBER: _ClassVar[int]
+    preferences: Preference
+    def __init__(self, preferences: _Optional[_Union[Preference, _Mapping]] = ...) -> None: ...
 
 class User(_message.Message):
     __slots__ = ["email", "id", "preferences"]

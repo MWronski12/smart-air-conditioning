@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-
 package database;
 
 
@@ -15,7 +13,7 @@ service DatabaseService {
 
   rpc AddUser (AddUserRequest) returns (AddUserResponse) {}
   rpc GetUser (GetUserRequest) returns (GetUserResponse) {}
-  rpc SetUserPreferences (SetUserPreferencesRequest) returns (google.protobuf.Empty) {}
+  rpc SetUserPreferences (SetUserPreferencesRequest) returns (SetUserPreferencesResponse) {}
 
   rpc AddUserToRoom (AddUserToRoomRequest) returns (AddUserToRoomResponse) {}
   rpc RemoveUserFromRoom (RemoveUserFromRoomRequest) returns (RemoveUserFromRoomResponse) {}
@@ -113,6 +111,10 @@ message GetUserResponse {
 message SetUserPreferencesRequest {
   string user_id = 1;
   Preference preferences = 2;
+}
+
+message SetUserPreferencesResponse {
+  Preference preferences = 1;
 }
 
 message AddUserToRoomRequest {

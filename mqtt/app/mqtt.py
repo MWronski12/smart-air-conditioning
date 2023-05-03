@@ -12,6 +12,7 @@ class MqttClient:
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.on_disconnect = self.on_disconnect
+        self.client.on_publish = self.on_publish
         self.username = username
         self.password = password
         self.connect()
@@ -38,13 +39,14 @@ class MqttClient:
         device_id = topic[2]
         data_type = topic[4]
 
-        logging.info(
-            f"Received message from {room_id}/{device_id}/{data_type}: {payload}"
-        )
+        logging.info(f"Received message from {room_id}/{device_id}/{data_type}: {payload}")
 
         channel = grpc.insecure_channel("influxdb_service:50051")
         stub = influxdb_pb2_grpc.InfluxdbServiceStub(channel)
         stub.WriteMeasurement()
+
+    def on_publish(self, client, userdata, mid):
+        logging.info(f"Message {mid} published")
 
     def subscribe(self, topic):
         self.client.subscribe(topic)

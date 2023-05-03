@@ -3,7 +3,6 @@
 import grpc
 
 from app.protos import database_pb2 as app_dot_protos_dot_database__pb2
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class DatabaseServiceStub(object):
@@ -53,7 +52,7 @@ class DatabaseServiceStub(object):
         self.SetUserPreferences = channel.unary_unary(
                 '/database.DatabaseService/SetUserPreferences',
                 request_serializer=app_dot_protos_dot_database__pb2.SetUserPreferencesRequest.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                response_deserializer=app_dot_protos_dot_database__pb2.SetUserPreferencesResponse.FromString,
                 )
         self.AddUserToRoom = channel.unary_unary(
                 '/database.DatabaseService/AddUserToRoom',
@@ -182,7 +181,7 @@ def add_DatabaseServiceServicer_to_server(servicer, server):
             'SetUserPreferences': grpc.unary_unary_rpc_method_handler(
                     servicer.SetUserPreferences,
                     request_deserializer=app_dot_protos_dot_database__pb2.SetUserPreferencesRequest.FromString,
-                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                    response_serializer=app_dot_protos_dot_database__pb2.SetUserPreferencesResponse.SerializeToString,
             ),
             'AddUserToRoom': grpc.unary_unary_rpc_method_handler(
                     servicer.AddUserToRoom,
@@ -341,7 +340,7 @@ class DatabaseService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/database.DatabaseService/SetUserPreferences',
             app_dot_protos_dot_database__pb2.SetUserPreferencesRequest.SerializeToString,
-            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            app_dot_protos_dot_database__pb2.SetUserPreferencesResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

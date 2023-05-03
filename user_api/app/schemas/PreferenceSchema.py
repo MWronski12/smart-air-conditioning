@@ -4,5 +4,5 @@ from pydantic import BaseModel
 
 class PreferenceSchema(BaseModel):
     fan_speed: Optional[int]
-    temperature: Optional[int]
+    temperature: Optional[float]
     room_id: Optional[str]

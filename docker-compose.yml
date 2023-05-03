@@ -13,10 +13,10 @@ services:
       context: influxdb
       dockerfile: Dockerfile
     environment:
-      - INFLUXDB_HOST: ${INFLUXDB_HOST}
-      - INFLUXDB_TOKEN: ${INFLUXDB_TOKEN}
-      - INFLUXDB_ORG: ${INFLUXDB_ORG}
-      - INFLUXDB_BUCKET: ${INFLUXDB_BUCKET}
+      - INFLUXDB_HOST=${INFLUXDB_HOST}
+        INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+        INFLUXDB_ORG=${INFLUXDB_ORG}
+        INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
     ports:
       - "8002:50051"
 

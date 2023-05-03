@@ -19,7 +19,7 @@ class FirebaseRepository(DatabaseRepository):
         ref.set({"name": room["name"]})
         return room
 
-    def get_room(self, room_id: str) -> Optional[Dict[str, Any]]:
+    def get_room(self, room_id: str) -> Dict[str, Any]:
         ref = db.reference(f"rooms/{room_id}")
         room = ref.get()
         if room is None:
@@ -76,7 +76,7 @@ class FirebaseRepository(DatabaseRepository):
 
         return {"id": user["id"], "name": user["name"]}
 
-    def get_user(self, user_id: str) -> Optional[Dict[str, Any]]:
+    def get_user(self, user_id: str) -> Dict[str, Any]:
         ref = db.reference(f"users/{user_id}")
         user = ref.get()
         if user is None:
@@ -84,12 +84,13 @@ class FirebaseRepository(DatabaseRepository):
 
         return {"id": user_id, "name": user["name"]}
 
-    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> None:
+    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> Dict[str, Any]:
         ref = db.reference(f"users/{user_id}")
         if ref.get() is None:
             raise UserNotFoundError(f"User {user_id} does not exist")
 
         ref.set(preferences)
+        return preferences
 
     def add_user_to_room(self, user_id: str, room_id: str) -> None:
         # Check if user exists

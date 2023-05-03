@@ -24,9 +24,9 @@ influxdb_stub = influxdb_pb2_grpc.InfluxdbServiceStub(influxdb_channel)
 mqtt_stub = mqtt_pb2_grpc.MqttServiceStub(mqtt_channel)
 
 
-def grpc_call(stub, request, success_callback: callable):
+def grpc_call(call_func: callable, request, success_callback: callable):
     try:
-        response = stub(request)
+        response = call_func(request)
         return success_callback(response)
     except grpc.RpcError as e:
         if e.code() == grpc.StatusCode.NOT_FOUND:
@@ -53,12 +53,12 @@ def grpc_call(stub, request, success_callback: callable):
 def get_device_data(room_id: str, device_id: str):
     def success_callback(response: influxdb_pb2.ReadMeasurementsResponse):
         return {
-            "temperature": [record.temperature for record in response.measurements],
-            "humidity": [record.humidity for record in response.measurements],
+            "temperature": [record.temperature for record in response.measurement],
+            "humidity": [record.humidity for record in response.measurement],
         }
 
     return grpc_call(
-        stub=influxdb_stub,
+        call_func=influxdb_stub.ReadMeasurements,
         request=influxdb_pb2.ReadMeasurementsRequest(
             room_id=room_id,
             device_id=device_id,
@@ -72,10 +72,10 @@ def get_device_data(room_id: str, device_id: str):
 @router.get("/rooms/{room_id}/devices/{device_id}/data/temperature")
 def get_device_temperature_data(room_id: str, device_id: str):
     def success_callback(response: influxdb_pb2.ReadMeasurementsResponse):
-        return [record.temperature for record in response.measurements]
+        return [record.temperature for record in response.measurement]
 
     return grpc_call(
-        stub=influxdb_stub,
+        call_func=influxdb_stub.ReadMeasurements,
         request=influxdb_pb2.ReadMeasurementsRequest(
             room_id=room_id,
             device_id=device_id,
@@ -89,10 +89,10 @@ def get_device_temperature_data(room_id: str, device_id: str):
 @router.get("/rooms/{room_id}/devices/{device_id}/data/humidity")
 def get_device_humidity_data(room_id: str, device_id: str):
     def success_callback(response: influxdb_pb2.ReadMeasurementsResponse):
-        return [record.humidity for record in response.measurements]
+        return [record.humidity for record in response.measurement]
 
     return grpc_call(
-        stub=influxdb_stub,
+        call_func=influxdb_stub.ReadMeasurements,
         request=influxdb_pb2.ReadMeasurementsRequest(
             room_id=room_id,
             device_id=device_id,
@@ -112,7 +112,7 @@ def get_all_rooms() -> list:
         return [{"id": room.id, "name": room.name} for room in response.rooms]
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.GetAllRooms,
         request=database_pb2.GetAllRoomsRequest(),
         success_callback=success_callback,
     )
@@ -124,7 +124,7 @@ def add_room(room: str) -> RoomSchema:
         return RoomSchema(id=response.room.id, name=response.room.name)
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.AddRoom,
         request=database_pb2.AddRoomRequest(
             room=database_pb2.Room(
                 id=uuid.uuid4().hex,
@@ -143,7 +143,7 @@ def get_devices_in_room(room_id: str) -> list:
         ]
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.GetDevicesInRoom,
         request=database_pb2.GetDevicesInRoomRequest(room_id=room_id),
         success_callback=success_callback,
     )
@@ -155,7 +155,7 @@ def register_device(room_id: str, device: DeviceSchema) -> DeviceSchema:
         return DeviceSchema(id=response.device.id, name=response.device.name, room=room_id)
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.AddDevice,
         request=database_pb2.AddDeviceRequest(
             room_id=room_id,
             device=database_pb2.Device(
@@ -173,11 +173,11 @@ def add_user(user: UserSchema) -> UserSchema:
         return UserSchema(id=response.user.id, email=response.user.email)
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.AddUser,
         request=database_pb2.AddUserRequest(
             user=database_pb2.User(
                 id=user.id,
-                name=user.email,
+                email=user.email,
             )
         ),
         success_callback=success_callback,
@@ -190,7 +190,7 @@ def get_user(uid: str) -> UserSchema:
         return UserSchema(id=response.user.id, email=response.user.email)
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.GetUser,
         request=database_pb2.GetUserRequest(
             id=uid,
         ),
@@ -208,7 +208,7 @@ def post_user_preference(uid: str, preference: PreferenceSchema) -> PreferenceSc
         )
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.SetUserPreferences,
         request=database_pb2.SetUserPreferencesRequest(
             user_id=uid,
             preferences=database_pb2.Preference(
@@ -227,7 +227,7 @@ def add_user_to_room(room_id: str, user_id: str) -> str:
         return response.user_id
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.AddUserToRoom,
         request=database_pb2.AddUserToRoomRequest(
             room_id=room_id,
             user_id=user_id,
@@ -242,7 +242,7 @@ def get_users_in_room(room_id: str) -> list:
         return [UserSchema(id=user.id, email=user.email) for user in response.users]
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.GetUsersInRoom,
         request=database_pb2.GetUsersInRoomRequest(room_id=room_id),
         success_callback=success_callback,
     )
@@ -254,7 +254,7 @@ def remove_user_from_room(room_id: str, user_id: str) -> str:
         return response.user_id
 
     return grpc_call(
-        stub=database_stub,
+        call_func=database_stub.RemoveUserFromRoom,
         request=database_pb2.RemoveUserFromRoomRequest(
             room_id=room_id,
             user_id=user_id,
@@ -268,13 +268,13 @@ def remove_user_from_room(room_id: str, user_id: str) -> str:
 
 @router.post("/rooms/{room_id}/devices/{device_id}/command")
 def post_command(room_id: str, device_id: str, controller: ControllerSchema):
-    def success_callback(response: mqtt_pb2.PublishDeviceCommandResponse):
-        return response
+    def success_callback(response: mqtt_pb2.PublishDeviceSettingsResponse):
+        return response.message
 
     return grpc_call(
-        stub=mqtt_stub,
-        request=mqtt_pb2.PublishDeviceCommandRequest(
-            mqtt_pb2.Command(
+        call_func=mqtt_stub.PublishDeviceSettings,
+        request=mqtt_pb2.PublishDeviceSettingsRequest(
+            settings=mqtt_pb2.Settings(
                 room_id=room_id,
                 device_id=device_id,
                 temperature=controller.temperature,

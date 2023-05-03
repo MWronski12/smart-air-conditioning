@@ -53,15 +53,16 @@ class FakeRepository(DatabaseRepository):
         self.users[user["id"]] = user
         return user
 
-    def get_user(self, user_id: str) -> Optional[Dict[str, Any]]:
+    def get_user(self, user_id: str) -> Dict[str, Any]:
         if user_id not in self.users:
             raise UserNotFoundError(f"User {user_id} does not exist")
         return self.users[user_id]
 
-    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> None:
+    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> Dict[str, Any]:
         if user_id not in self.users:
             raise UserNotFoundError(f"User {user_id} does not exist")
         self.users[user_id]["preferences"] = preferences
+        return preferences
 
     def add_user_to_room(self, user_id: str, room_id: str) -> None:
         if user_id not in self.users:

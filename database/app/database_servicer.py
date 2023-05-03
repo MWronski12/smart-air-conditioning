@@ -20,7 +20,9 @@ class DatabaseServicer(database_pb2_grpc.DatabaseServiceServicer):
 
     def AddRoom(self, request: database_pb2.AddRoomRequest, context):
         try:
-            room = self.repository.add_room(MessageToDict(request.room))
+            room = self.repository.add_room(
+                MessageToDict(request.room, preserving_proto_field_name=True)
+            )
         except RoomAlreadyExistsError as e:
             self.__rpc_context_set(context, grpc.StatusCode.ALREADY_EXISTS, str(e))
             return database_pb2.AddRoomResponse()
@@ -35,13 +37,15 @@ class DatabaseServicer(database_pb2_grpc.DatabaseServiceServicer):
             return database_pb2.GetRoomResponse()
         return database_pb2.GetRoomResponse(room=database_pb2.Room(**room))
 
-    def GetAllRooms(self, request: database_pb2.google_dot_protobuf_dot_empty__pb2.Empty, context):
+    def GetAllRooms(self, request: database_pb2.GetAllRoomsRequest, context):
         rooms = self.repository.get_all_rooms()
         return database_pb2.GetAllRoomsResponse(rooms=[database_pb2.Room(**room) for room in rooms])
 
     def AddDevice(self, request: database_pb2.AddDeviceRequest, context):
         try:
-            device = self.repository.add_device(request.room_id, MessageToDict(request.device))
+            device = self.repository.add_device(
+                request.room_id, MessageToDict(request.device, preserving_proto_field_name=True)
+            )
         except DeviceAlreadyExistsError as e:
             self.__rpc_context_set(context, grpc.StatusCode.ALREADY_EXISTS, str(e))
             return database_pb2.AddDeviceResponse()
@@ -64,12 +68,23 @@ class DatabaseServicer(database_pb2_grpc.DatabaseServiceServicer):
 
     def AddUser(self, request: database_pb2.AddUserRequest, context):
         try:
-            user = self.repository.add_user(MessageToDict(request.user))
+            user = self.repository.add_user(
+                MessageToDict(request.user, preserving_proto_field_name=True)
+            )
         except UserAlreadyExistsError as e:
             self.__rpc_context_set(context, grpc.StatusCode.ALREADY_EXISTS, str(e))
             return database_pb2.AddUserResponse()
 
-        return database_pb2.AddUserResponse(user=database_pb2.User(**user))
+        if "preferences" not in user:
+            user["preferences"] = {}
+
+        return database_pb2.AddUserResponse(
+            user=database_pb2.User(
+                id=user["id"],
+                email=user["email"],
+                preferences=database_pb2.Preference(**user["preferences"]),
+            )
+        )
 
     def GetUser(self, request: database_pb2.GetUserRequest, context):
         try:
@@ -78,16 +93,30 @@ class DatabaseServicer(database_pb2_grpc.DatabaseServiceServicer):
             self.__rpc_context_set(context, grpc.StatusCode.NOT_FOUND, str(e))
             return database_pb2.GetUserResponse()
 
-        return database_pb2.GetUserResponse(user=database_pb2.User(**user))
+        if "preferences" not in user:
+            user["preferences"] = {}
+
+        return database_pb2.GetUserResponse(
+            user=database_pb2.User(
+                id=user["id"],
+                email=user["email"],
+                preferences=database_pb2.Preference(**user["preferences"]),
+            )
+        )
 
     def SetUserPreferences(self, request: database_pb2.SetUserPreferencesRequest, context):
         try:
-            user = self.repository.set_user_preferences(request.user_id, request.preferences)
+            preferences = self.repository.set_user_preferences(
+                request.user_id,
+                MessageToDict(request.preferences, preserving_proto_field_name=True),
+            )
         except UserNotFoundError as e:
             self.__rpc_context_set(context, grpc.StatusCode.NOT_FOUND, str(e))
             return database_pb2.GetUserResponse()
 
-        return database_pb2.GetUserResponse(user=database_pb2.User(**user))
+        return database_pb2.SetUserPreferencesResponse(
+            preferences=database_pb2.Preference(**preferences)
+        )
 
     def AddUserToRoom(self, request: database_pb2.AddUserToRoomRequest, context):
         try:
@@ -95,7 +124,7 @@ class DatabaseServicer(database_pb2_grpc.DatabaseServiceServicer):
         except (UserNotFoundError, RoomNotFoundError) as e:
             self.__rpc_context_set(context, grpc.StatusCode.NOT_FOUND, str(e))
         finally:
-            return database_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
+            return database_pb2.AddUserToRoomResponse()
 
     def RemoveUserFromRoom(self, request: database_pb2.RemoveUserFromRoomRequest, context):
         try:
@@ -103,7 +132,7 @@ class DatabaseServicer(database_pb2_grpc.DatabaseServiceServicer):
         except (UserNotFoundError, RoomNotFoundError) as e:
             self.__rpc_context_set(context, grpc.StatusCode.NOT_FOUND, str(e))
         finally:
-            return database_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
+            return database_pb2.RemoveUserFromRoomResponse()
 
     def GetUsersInRoom(self, request: database_pb2.GetUsersInRoomRequest, context):
         try:
@@ -113,5 +142,12 @@ class DatabaseServicer(database_pb2_grpc.DatabaseServiceServicer):
             return database_pb2.GetUsersInRoomResponse()
 
         return database_pb2.GetUsersInRoomResponse(
-            users=[database_pb2.User(**user) for user in users]
+            users=[
+                database_pb2.User(
+                    id=user["id"],
+                    email=user["email"],
+                    preferences=database_pb2.Preference(**user["preferences"]),
+                )
+                for user in users
+            ]
         )
