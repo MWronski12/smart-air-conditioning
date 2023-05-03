@@ -24,12 +24,39 @@ influxdb_stub = influxdb_pb2_grpc.InfluxdbServiceStub(influxdb_channel)
 mqtt_stub = mqtt_pb2_grpc.MqttServiceStub(mqtt_channel)
 
 
+def grpc_call(stub, request, success_callback: callable):
+    try:
+        response = stub(request)
+        return success_callback(response)
+    except grpc.RpcError as e:
+        if e.code() == grpc.StatusCode.NOT_FOUND:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=e.details(),
+            )
+        elif e.code() == grpc.StatusCode.ALREADY_EXISTS:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=e.details(),
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=e.details(),
+            )
+
+
 # ------------ Interfacing with InfluxDB ------------#
 
 
 @router.get("/rooms/{room_id}/devices/{device_id}/data")
 def get_device_data(room_id: str, device_id: int):
-    pass
+    def success_callback(response: influxdb_pb2.ReadMeasurementsResponse):
+        return {
+            "temperature": [record.temperature for record in response.measurements],
+            "humidity": [record.humidity for record in response.measurements],
+        }
+
     # request = influxdb_pb2.ReadMeasurementsRequest(
     #     room_id=room_id, device_id=device_id, has_humidity=True, has_temperature=True
     # )
@@ -62,204 +89,178 @@ def get_device_data(room_id: str, device_id: int):
 
 @router.get("/rooms")
 def get_all_rooms() -> list:
-    try:
-        response: database_pb2.GetAllRoomsResponse = database_stub.GetAllRooms(
-            database_pb2.GetAllRoomsRequest(),
-        )
-        room_list = [{"id": room.id, "name": room.name} for room in response.rooms]
-        return room_list
-    except grpc.RpcError as e:
-        if e.code() == grpc.StatusCode.NOT_FOUND:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=e.details(),
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=e.details(),
-            )
+    def success_callback(response: database_pb2.GetAllRoomsResponse):
+        return [{"id": room.id, "name": room.name} for room in response.rooms]
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.GetAllRoomsRequest(),
+        success_callback=success_callback,
+    )
 
 
-@router.post("/rooms")
-def post_room(room: str) -> RoomSchema:
-    roomId = uuid.uuid4().hex
-    try:
-        response: database_pb2.AddRoomResponse = database_stub.AddRoom(
-            database_pb2.AddRoomRequest(
-                room=database_pb2.Room(
-                    id=roomId,
-                    name=room,
-                )
-            )
-        )
+@router.post("/rooms", status_code=status.HTTP_201_CREATED)
+def add_room(room: str) -> RoomSchema:
+    def success_callback(response: database_pb2.AddRoomResponse):
         return RoomSchema(id=response.room.id, name=response.room.name)
-    except grpc.RpcError as e:
-        if e.code() == grpc.StatusCode.ALREADY_EXISTS:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail=e.details()
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.AddRoomRequest(
+            room=database_pb2.Room(
+                id=uuid.uuid4().hex,
+                name=room,
             )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=e.details()
-            )
+        ),
+        success_callback=success_callback,
+    )
 
 
 @router.get("/rooms/{room_id}/devices")
 def get_devices_in_room(room_id: str) -> list:
-    try:
-        response: database_pb2.GetDevicesInRoomResponse = (
-            database_stub.GetDevicesInRoom(
-                database_pb2.GetDevicesInRoomRequest(room_id=room_id)
-            )
-        )
-        devices = [
-            {"id": device.id, "name": device.name, "room": room_id}
-            for device in response.devices
+    def success_callback(response: database_pb2.GetDevicesInRoomResponse):
+        return [
+            {"id": device.id, "name": device.name, "room": room_id} for device in response.devices
         ]
-        print(device)
-        return devices
-    except grpc.RpcError as e:
-        if e.code() == grpc.StatusCode.NOT_FOUND:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=e.details(),
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=e.details()
-            )
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.GetDevicesInRoomRequest(room_id=room_id),
+        success_callback=success_callback,
+    )
 
 
-@router.post("/rooms/{room_id}/devices/register")
+@router.post("/rooms/{room_id}/devices", status_code=status.HTTP_201_CREATED)
 def register_device(room_id: str, device: DeviceSchema) -> DeviceSchema:
-    try:
-        response: database_pb2.AddDeviceResponse = database_stub.AddDevice(
-            database_pb2.AddDeviceRequest(
-                room_id=room_id,
-                device=database_pb2.Device(
-                    id=device.id,
-                    name=device.name,
-                ),
-            )
-        )
-        return DeviceSchema(
-            id=response.device.id, name=response.device.name, room=room_id
-        )
-    except grpc.RpcError as e:
-        if e.code() == grpc.StatusCode.ALREADY_EXISTS:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=e.details(),
-            )
-        elif e.code() == grpc.StatusCode.NOT_FOUND:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=e.details(),
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=e.details(),
-            )
+    def success_callback(response: database_pb2.AddDeviceResponse):
+        return DeviceSchema(id=response.device.id, name=response.device.name, room=room_id)
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.AddDeviceRequest(
+            room_id=room_id,
+            device=database_pb2.Device(
+                id=device.id,
+                name=device.name,
+            ),
+        ),
+        success_callback=success_callback,
+    )
 
 
-@router.post("/users")
-def post_user(user: UserSchema) -> UserSchema:
-    try:
-        database_stub.AddUser(
-            database_pb2.AddUserRequest(
-                user=database_pb2.User(
-                    id=user.id,
-                    name=user.email,
-                )
+@router.post("/users", status_code=status.HTTP_201_CREATED)
+def add_user(user: UserSchema) -> UserSchema:
+    def success_callback(response: database_pb2.AddUserResponse):
+        return UserSchema(id=response.user.id, email=response.user.email)
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.AddUserRequest(
+            user=database_pb2.User(
+                id=user.id,
+                name=user.email,
             )
-        )
-        return user
-    except grpc.RpcError as e:
-        if e.code() == grpc.StatusCode.ALREADY_EXISTS:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="User already exists",
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Internal server error",
-            )
+        ),
+        success_callback=success_callback,
+    )
 
 
 @router.get("/users/{uid}")
 def get_user(uid: str) -> UserSchema:
-    try:
-        response: database_pb2.GetUserResponse = database_stub.GetUser(
-            database_pb2.GetUserRequest(
-                id=uid,
-            )
-        )
-        return UserSchema(id=response.user.id, email=response.user.name)
-    except grpc.RpcError as e:
-        if e.code() == grpc.StatusCode.NOT_FOUND:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Internal server error",
-            )
+    def success_callback(response: database_pb2.GetUserResponse):
+        return UserSchema(id=response.user.id, email=response.user.email)
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.GetUserRequest(
+            id=uid,
+        ),
+        success_callback=success_callback,
+    )
 
 
-@router.post("/users/{uid}/preferences")
+@router.post("/users/{uid}/preferences", status_code=status.HTTP_201_CREATED)
 def post_user_preference(uid: str, preference: PreferenceSchema) -> PreferenceSchema:
-    try:
-        database_stub.SetUserPreferences(
-            database_pb2.SetUserPreferencesRequest(
-                user_id=uid,
-                preferences=database_pb2.Preference(
-                    temperature=preference.temperature,
-                    fan_speed=preference.fan_speed,
-                    room_id=preference.room_id,
-                ),
-            )
+    def success_callback(response: database_pb2.SetUserPreferencesResponse):
+        return PreferenceSchema(
+            temperature=response.preferences.temperature,
+            fan_speed=response.preferences.fan_speed,
+            room_id=response.preferences.room_id,
         )
-        return preference
-    except grpc.RpcError as e:
-        if e.code() == grpc.StatusCode.NOT_FOUND:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=e.details(),
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=e.details(),
-            )
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.SetUserPreferencesRequest(
+            user_id=uid,
+            preferences=database_pb2.Preference(
+                temperature=preference.temperature,
+                fan_speed=preference.fan_speed,
+                room_id=preference.room_id,
+            ),
+        ),
+        success_callback=success_callback,
+    )
 
 
-@router.get("/users/{uid}/preferences/{room_id}")
-def get_user_preference(uid: str, room_id: str):
-    pass
+@router.post("/rooms/{room_id}/users", status_code=status.HTTP_201_CREATED)
+def add_user_to_room(room_id: str, user_id: str) -> str:
+    def success_callback(response: database_pb2.AddUserToRoomResponse):
+        return response.user_id
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.AddUserToRoomRequest(
+            room_id=room_id,
+            user_id=user_id,
+        ),
+        success_callback=success_callback,
+    )
+
+
+@router.get("/rooms/{room_id}/users")
+def get_users_in_room(room_id: str) -> list:
+    def success_callback(response: database_pb2.GetUsersInRoomResponse):
+        return [UserSchema(id=user.id, email=user.email) for user in response.users]
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.GetUsersInRoomRequest(room_id=room_id),
+        success_callback=success_callback,
+    )
+
+
+@router.delete("/rooms/{room_id}/users/{user_id}")
+def remove_user_from_room(room_id: str, user_id: str) -> str:
+    def success_callback(response: database_pb2.RemoveUserFromRoomResponse):
+        return response.user_id
+
+    return grpc_call(
+        stub=database_stub,
+        request=database_pb2.RemoveUserFromRoomRequest(
+            room_id=room_id,
+            user_id=user_id,
+        ),
+        success_callback=success_callback,
+    )
+
 
 # ------------ Interfacing with MQTT ------------#
 
 
 @router.post("/rooms/{room_id}/devices/{device_id}/command")
 def post_command(room_id: str, device_id: str, controller: ControllerSchema):
-    try:
-        response = mqtt_stub.PublishDeviceSettings(
-            mqtt_pb2.PublishDeviceSettingsRequest(
-                mqtt_pb2.Settings(
-                    room_id=room_id,
-                    device_id=device_id,
-                    temperature=controller.temperature,
-                    fan_speed=controller.fan_speed,
-                )
-            )
-        )
+    def success_callback(response: mqtt_pb2.PublishDeviceCommandResponse):
         return response
-    except grpc.RpcError as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
-        )
+
+    return grpc_call(
+        stub=mqtt_stub,
+        request=mqtt_pb2.PublishDeviceCommandRequest(
+            mqtt_pb2.Command(
+                room_id=room_id,
+                device_id=device_id,
+                temperature=controller.temperature,
+                fan_speed=controller.fan_speed,
+            )
+        ),
+        success_callback=success_callback,
+    )
