@@ -18,6 +18,17 @@ This script will activate the virtual environment and install the required depen
 Then it will generate the python files into `proto` directory based on `.proto` files located in `protobufs` directory.
 It will also copy the generated files into each microservice directory.
 
+
+### InfluxDB configuration
+To user InfluxDB, you have to create a `.env` file in the root directory of the project.
+This file should contain the following variables:
+```bash
+INFLUXDB_HOST=<influxdb_host>
+INFLUXDB_TOKEN=<influxdb_password>
+INFLUXDB_ORG=<influxdb_org>
+INFLUXDB_BUCKET=<influxdb_bucket>
+```
+
 ## Running the microservices
 
 To run the microservices using docker-compose, you can use `docker-compose.yml` file:

@@ -1,4 +1,6 @@
-INFLUXDB_HOST = "https://eu-central-1-1.aws.cloud2.influxdata.com"
-INFLUXDB_TOKEN = "eX-SFEvpI4lrDeeiv4Tgp-vNqIYh8GrTUNaeFb0_PFHyyUrJ0K-IOzUgc4gZj9KGuMJ-RnYNa9CmjHTdM9xMNw=="
-INFLUXDB_ORG = "PBL5"
-INFLUXDB_BUCKET = "air-conditioning"
+import os
+
+INFLUXDB_HOST = os.getenv("INFLUXDB_HOST")
+INFLUXDB_TOKEN = os.getenv("INFLUXDB_TOKEN")
+INFLUXDB_ORG = os.getenv("INFLUXDB_ORG")
+INFLUXDB_BUCKET = os.getenv("INFLUXDB_BUCKET")
