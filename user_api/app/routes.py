@@ -50,38 +50,57 @@ def grpc_call(stub, request, success_callback: callable):
 
 
 @router.get("/rooms/{room_id}/devices/{device_id}/data")
-def get_device_data(room_id: str, device_id: int):
+def get_device_data(room_id: str, device_id: str):
     def success_callback(response: influxdb_pb2.ReadMeasurementsResponse):
         return {
             "temperature": [record.temperature for record in response.measurements],
             "humidity": [record.humidity for record in response.measurements],
         }
 
-    # request = influxdb_pb2.ReadMeasurementsRequest(
-    #     room_id=room_id, device_id=device_id, has_humidity=True, has_temperature=True
-    # )
+    return grpc_call(
+        stub=influxdb_stub,
+        request=influxdb_pb2.ReadMeasurementsRequest(
+            room_id=room_id,
+            device_id=device_id,
+            has_humidity=True,
+            has_temperature=True,
+        ),
+        success_callback=success_callback,
+    )
 
-    # channel = grpc.insecure_channel("influxdb:8086")
-    # with InfluxdbServiceStub(channel) as stub:
-    #     pass
 
-    # tables = influxdb_client.query_api().query(org=INFLUXDB_ORG, query=query)
-    # temperature_list = list()
-    # humidity_list = list()
+@router.get("/rooms/{room_id}/devices/{device_id}/data/temperature")
+def get_device_temperature_data(room_id: str, device_id: str):
+    def success_callback(response: influxdb_pb2.ReadMeasurementsResponse):
+        return [record.temperature for record in response.measurements]
 
-    # for table in tables:
-    #     for record in table.records:
-    #         data_type = record.get_field()
-    #         timestamp = record.get_time()
-    #         if data_type == "temperature":
-    #             temperature_list.append(
-    #                 record.get_value(),
-    #             )
-    #         elif data_type == "humidity":
-    #             humidity_list.append(
-    #                 record.get_value(),
-    #             )
-    # return {"temperature": temperature_list, "humidity": humidity_list}
+    return grpc_call(
+        stub=influxdb_stub,
+        request=influxdb_pb2.ReadMeasurementsRequest(
+            room_id=room_id,
+            device_id=device_id,
+            has_temperature=True,
+            has_humidity=False,
+        ),
+        success_callback=success_callback,
+    )
+
+
+@router.get("/rooms/{room_id}/devices/{device_id}/data/humidity")
+def get_device_humidity_data(room_id: str, device_id: str):
+    def success_callback(response: influxdb_pb2.ReadMeasurementsResponse):
+        return [record.humidity for record in response.measurements]
+
+    return grpc_call(
+        stub=influxdb_stub,
+        request=influxdb_pb2.ReadMeasurementsRequest(
+            room_id=room_id,
+            device_id=device_id,
+            has_temperature=False,
+            has_humidity=True,
+        ),
+        success_callback=success_callback,
+    )
 
 
 # ------------ Interfacing with the database ------------#
