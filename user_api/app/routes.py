@@ -46,6 +46,14 @@ def grpc_call(call_func: callable, request, success_callback: callable):
             )
 
 
+@router.options("/{path:path}")
+def options_handler(path: str):
+    """
+    Handler for OPTIONS requests.
+    """
+    return {"Allow": "GET, POST, PUT, DELETE, OPTIONS"}
+
+
 # ------------ Interfacing with InfluxDB ------------#
 
 
