@@ -8,8 +8,11 @@ from .exceptions import *
 
 class FirebaseRepository(DatabaseRepository):
     def __init__(self):
-        cred = credentials.Certificate("path/to/serviceAccountKey.json")
-        firebase_admin.initialize_app(cred, {"databaseURL": "https://your-project.firebaseio.com"})
+        cred = credentials.Certificate("pbl5-firebase-admin-key.json")
+        firebase_admin.initialize_app(
+            cred,
+            {"databaseURL": "https://pbl5-5d9d2-default-rtdb.europe-west1.firebasedatabase.app/"},
+        )
 
     def add_room(self, room: Dict[str, Any]) -> Dict[str, Any]:
         ref = db.reference(f"rooms/{room['id']}")
@@ -33,16 +36,16 @@ class FirebaseRepository(DatabaseRepository):
         return [{"id": room_id, "name": room["name"]} for room_id, room in rooms.items()]
 
     def add_device(self, room_id: str, device: Dict[str, Any]) -> Dict[str, Any]:
+        # Check if room exists
+        ref = db.reference(f"rooms/{room_id}")
+        if ref.get() is None:
+            raise RoomNotFoundError(f"Room {room_id} does not exist")
+
         ref = db.reference(f"devices/{device['id']}")
 
         # Check if device already exists
         if ref.get() is not None:
             raise DeviceAlreadyExistsError(f"Device {device['id']} already exists")
-
-        # Check if room exists
-        ref = db.reference(f"rooms/{room_id}")
-        if ref.get() is None:
-            raise RoomNotFoundError(f"Room {room_id} does not exist")
 
         ref.set({"name": device["name"]})
         ref = db.reference(f"rooms_devices/{room_id}/{device['id']}")
@@ -52,10 +55,10 @@ class FirebaseRepository(DatabaseRepository):
 
     def get_devices_in_room(self, room_id: str) -> List[Dict[str, Any]]:
         ref = db.reference(f"rooms_devices/{room_id}")
-        if ref.get() is None:
+        dev_ids = ref.get()
+        if dev_ids is None:
             raise RoomNotFoundError(f"Room {room_id} does not exist")
 
-        dev_ids = ref.get()
         devices = []
         for dev_id in dev_ids:
             ref = db.reference(f"devices/{dev_id}")
@@ -69,12 +72,12 @@ class FirebaseRepository(DatabaseRepository):
         if ref.get() is not None:
             raise UserAlreadyExistsError(f"User {user['id']} already exists")
 
-        ref.set({"name": user["name"]})
+        ref.set({"email": user["email"]})
         if "preferences" in user:
             ref = db.reference(f"users/{user['id']}")
             ref.set(user["preferences"])
 
-        return {"id": user["id"], "name": user["name"]}
+        return {"id": user["id"], "email": user["email"]}
 
     def get_user(self, user_id: str) -> Dict[str, Any]:
         ref = db.reference(f"users/{user_id}")
@@ -82,7 +85,7 @@ class FirebaseRepository(DatabaseRepository):
         if user is None:
             raise UserNotFoundError(f"User {user_id} does not exist")
 
-        return {"id": user_id, "name": user["name"]}
+        return {"id": user_id, "email": user["email"]}
 
     def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> Dict[str, Any]:
         ref = db.reference(f"users/{user_id}")
