@@ -124,14 +124,12 @@ class GetUsersInRoomResponse(_message.Message):
     def __init__(self, users: _Optional[_Iterable[_Union[User, _Mapping]]] = ...) -> None: ...
 
 class Preference(_message.Message):
-    __slots__ = ["fan_speed", "room_id", "temperature"]
+    __slots__ = ["fan_speed", "temperature"]
     FAN_SPEED_FIELD_NUMBER: _ClassVar[int]
-    ROOM_ID_FIELD_NUMBER: _ClassVar[int]
     TEMPERATURE_FIELD_NUMBER: _ClassVar[int]
     fan_speed: int
-    room_id: str
     temperature: float
-    def __init__(self, temperature: _Optional[float] = ..., fan_speed: _Optional[int] = ..., room_id: _Optional[str] = ...) -> None: ...
+    def __init__(self, temperature: _Optional[float] = ..., fan_speed: _Optional[int] = ...) -> None: ...
 
 class RemoveUserFromRoomRequest(_message.Message):
     __slots__ = ["room_id", "user_id"]

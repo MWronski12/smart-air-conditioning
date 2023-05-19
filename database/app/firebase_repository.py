@@ -102,12 +102,20 @@ class FirebaseRepository(DatabaseRepository):
             raise UserNotFoundError(f"User {user_id} does not exist")
 
         # Check if room exists
-        ref = db.reference(f"rooms/{room_id}")
-        if ref.get() is None:
+        new_room_ref = db.reference(f"rooms/{room_id}")
+        if new_room_ref.get() is None:
             raise RoomNotFoundError(f"Room {room_id} does not exist")
 
-        ref = db.reference(f"room_users/{room_id}/{user_id}")
-        ref.set(True)
+        rooms_ref = db.reference(f"rooms")
+        rooms = rooms_ref.get()
+        if rooms:
+            for room_key, room_value in rooms.items():
+                room_user_ref = db.reference(f"room_users/{room_key}/{user_id}")
+                if room_user_ref.get() is not None:
+                    room_user_ref.set(False)
+
+        new_ref = db.reference(f"room_users/{room_id}/{user_id}")
+        new_ref.set(True)
 
     def remove_user_from_room(self, user_id: str, room_id: str) -> None:
         # Check if user exists

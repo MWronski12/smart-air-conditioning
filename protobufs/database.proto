@@ -35,7 +35,6 @@ message Device {
 message Preference {
   float temperature = 1;
   int32 fan_speed = 2;
-  string room_id = 3;
 }
 
 message User {

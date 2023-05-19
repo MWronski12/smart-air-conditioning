@@ -212,7 +212,6 @@ def post_user_preference(uid: str, preference: PreferenceSchema) -> PreferenceSc
         return PreferenceSchema(
             temperature=response.preferences.temperature,
             fan_speed=response.preferences.fan_speed,
-            room_id=response.preferences.room_id,
         )
 
     return grpc_call(
@@ -222,7 +221,6 @@ def post_user_preference(uid: str, preference: PreferenceSchema) -> PreferenceSc
             preferences=database_pb2.Preference(
                 temperature=preference.temperature,
                 fan_speed=preference.fan_speed,
-                room_id=preference.room_id,
             ),
         ),
         success_callback=success_callback,

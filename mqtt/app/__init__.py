@@ -5,7 +5,7 @@ from .mqtt_servicer import MqttServicer
 
 
 def serve(port=50051) -> None:
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     server = grpc.server(ThreadPoolExecutor(max_workers=10))
     servicer = MqttServicer()
     servicer.add_to_server(server)
