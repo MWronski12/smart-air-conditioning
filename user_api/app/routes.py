@@ -8,6 +8,8 @@ from .protos import (
     influxdb_pb2_grpc,
     mqtt_pb2,
     mqtt_pb2_grpc,
+    logic_pb2,
+    logic_pb2_grpc,
 )
 from .schemas import *
 
@@ -18,10 +20,12 @@ router = APIRouter(prefix=BASE_URL)
 database_channel = grpc.insecure_channel("database_service:50051")
 influxdb_channel = grpc.insecure_channel("influxdb_service:50051")
 mqtt_channel = grpc.insecure_channel("mqtt_service:50051")
+logic_channel = grpc.insecure_channel("mqtt_service:50051")
 
 database_stub = database_pb2_grpc.DatabaseServiceStub(database_channel)
 influxdb_stub = influxdb_pb2_grpc.InfluxdbServiceStub(influxdb_channel)
 mqtt_stub = mqtt_pb2_grpc.MqttServiceStub(mqtt_channel)
+logic_stub = logic_pb2_grpc.LogicServiceStub(logic_channel)
 
 
 def grpc_call(call_func: callable, request, success_callback: callable):
@@ -232,6 +236,9 @@ def add_user_to_room(room_id: str, user_id: str) -> str:
     def success_callback(response: database_pb2.AddUserToRoomResponse):
         return response.user_id
 
+    grpc_call(call_func=logic_stub.NotifyUserRoomChange,
+              request=logic_pb2.NotifyUserRoomChangeRequest(user_id=user_id, room_id=room_id))
+
     return grpc_call(
         call_func=database_stub.AddUserToRoom,
         request=database_pb2.AddUserToRoomRequest(
@@ -258,6 +265,9 @@ def get_users_in_room(room_id: str) -> list:
 def remove_user_from_room(room_id: str, user_id: str) -> str:
     def success_callback(response: database_pb2.RemoveUserFromRoomResponse):
         return response.user_id
+
+    grpc_call(call_func=logic_stub.NotifyUserRoomChange,
+              request=logic_pb2.NotifyUserRoomChangeRequest(user_id=user_id, room_id=room_id))
 
     return grpc_call(
         call_func=database_stub.RemoveUserFromRoom,

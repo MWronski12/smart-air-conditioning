@@ -45,7 +45,8 @@ class FirebaseRepository(DatabaseRepository):
 
         # Check if device already exists
         if ref.get() is not None:
-            raise DeviceAlreadyExistsError(f"Device {device['id']} already exists")
+            raise DeviceAlreadyExistsError(
+                f"Device {device['id']} already exists")
 
         ref.set({"name": device["name"]})
         ref = db.reference(f"rooms_devices/{room_id}/{device['id']}")
@@ -92,7 +93,7 @@ class FirebaseRepository(DatabaseRepository):
         if ref.get() is None:
             raise UserNotFoundError(f"User {user_id} does not exist")
 
-        ref.set(preferences)
+        ref.update(preferences)
         return preferences
 
     def add_user_to_room(self, user_id: str, room_id: str) -> None:
@@ -110,7 +111,8 @@ class FirebaseRepository(DatabaseRepository):
         rooms = rooms_ref.get()
         if rooms:
             for room_key, room_value in rooms.items():
-                room_user_ref = db.reference(f"room_users/{room_key}/{user_id}")
+                room_user_ref = db.reference(
+                    f"room_users/{room_key}/{user_id}")
                 if room_user_ref.get() is not None:
                     room_user_ref.set(False)
 
@@ -145,3 +147,13 @@ class FirebaseRepository(DatabaseRepository):
             user = ref.get()
             users.append(user)
         return users
+
+    def get_user_room(self, user_id: str) -> Optional[Dict[str, Any]]:
+        room = None
+        rooms_users_ref = db.reference("rooms_users")
+        rooms_users = rooms_users_ref.get()
+        for found_room_id, found_user_id in rooms_users.items():
+            if found_user_id == user_id:
+                room = db.reference(f"rooms/{found_room_id}").get()
+
+        return room

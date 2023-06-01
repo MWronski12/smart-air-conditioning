@@ -18,6 +18,7 @@ service DatabaseService {
   rpc AddUserToRoom (AddUserToRoomRequest) returns (AddUserToRoomResponse) {}
   rpc RemoveUserFromRoom (RemoveUserFromRoomRequest) returns (RemoveUserFromRoomResponse) {}
   rpc GetUsersInRoom (GetUsersInRoomRequest) returns (GetUsersInRoomResponse) {}
+  rpc GetUserRoom (GetUserRoomRequest) returns (GetUserRoomResponse) {}
 }
 
 /* Basic types */
@@ -68,6 +69,14 @@ message GetAllRoomsRequest {
 
 message GetAllRoomsResponse {
   repeated Room rooms = 1;
+}
+
+message GetUserRoomRequest {
+  string user_id = 1;
+}
+
+message GetUserRoomResponse {
+  optional Room room = 1;
 }
 
 /* Devices */

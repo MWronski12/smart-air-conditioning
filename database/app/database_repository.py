@@ -46,3 +46,7 @@ class DatabaseRepository(ABC):
     @abstractmethod
     def get_users_in_room(self, room_id: str) -> List[Dict[str, Any]]:
         pass
+
+    @abstractmethod
+    def get_user_room(self, user_id: str) -> Optional[Dict[str, Any]]:
+        pass

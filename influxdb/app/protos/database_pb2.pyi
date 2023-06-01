@@ -111,6 +111,18 @@ class GetUserResponse(_message.Message):
     user: User
     def __init__(self, user: _Optional[_Union[User, _Mapping]] = ...) -> None: ...
 
+class GetUserRoomRequest(_message.Message):
+    __slots__ = ["user_id"]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ...) -> None: ...
+
+class GetUserRoomResponse(_message.Message):
+    __slots__ = ["room"]
+    ROOM_FIELD_NUMBER: _ClassVar[int]
+    room: Room
+    def __init__(self, room: _Optional[_Union[Room, _Mapping]] = ...) -> None: ...
+
 class GetUsersInRoomRequest(_message.Message):
     __slots__ = ["room_id"]
     ROOM_ID_FIELD_NUMBER: _ClassVar[int]

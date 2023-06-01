@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19\x61pp/protos/database.proto\x12\x08\x64\x61tabase\" \n\x04Room\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"\"\n\x06\x44\x65vice\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"4\n\nPreference\x12\x13\n\x0btemperature\x18\x01 \x01(\x02\x12\x11\n\tfan_speed\x18\x02 \x01(\x05\"a\n\x04User\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12.\n\x0bpreferences\x18\x03 \x01(\x0b\x32\x14.database.PreferenceH\x00\x88\x01\x01\x42\x0e\n\x0c_preferences\".\n\x0e\x41\x64\x64RoomRequest\x12\x1c\n\x04room\x18\x01 \x01(\x0b\x32\x0e.database.Room\"/\n\x0f\x41\x64\x64RoomResponse\x12\x1c\n\x04room\x18\x01 \x01(\x0b\x32\x0e.database.Room\"\x1c\n\x0eGetRoomRequest\x12\n\n\x02id\x18\x01 \x01(\t\"/\n\x0fGetRoomResponse\x12\x1c\n\x04room\x18\x01 \x01(\x0b\x32\x0e.database.Room\"\x14\n\x12GetAllRoomsRequest\"4\n\x13GetAllRoomsResponse\x12\x1d\n\x05rooms\x18\x01 \x03(\x0b\x32\x0e.database.Room\"E\n\x10\x41\x64\x64\x44\x65viceRequest\x12\x0f\n\x07room_id\x18\x01 \x01(\t\x12 \n\x06\x64\x65vice\x18\x02 \x01(\x0b\x32\x10.database.Device\"5\n\x11\x41\x64\x64\x44\x65viceResponse\x12 \n\x06\x64\x65vice\x18\x01 \x01(\x0b\x32\x10.database.Device\"*\n\x17GetDevicesInRoomRequest\x12\x0f\n\x07room_id\x18\x01 \x01(\t\"=\n\x18GetDevicesInRoomResponse\x12!\n\x07\x64\x65vices\x18\x01 \x03(\x0b\x32\x10.database.Device\".\n\x0e\x41\x64\x64UserRequest\x12\x1c\n\x04user\x18\x01 \x01(\x0b\x32\x0e.database.User\"/\n\x0f\x41\x64\x64UserResponse\x12\x1c\n\x04user\x18\x01 \x01(\x0b\x32\x0e.database.User\"\x1c\n\x0eGetUserRequest\x12\n\n\x02id\x18\x01 \x01(\t\"/\n\x0fGetUserResponse\x12\x1c\n\x04user\x18\x01 \x01(\x0b\x32\x0e.database.User\"W\n\x19SetUserPreferencesRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12)\n\x0bpreferences\x18\x02 \x01(\x0b\x32\x14.database.Preference\"G\n\x1aSetUserPreferencesResponse\x12)\n\x0bpreferences\x18\x01 \x01(\x0b\x32\x14.database.Preference\"8\n\x14\x41\x64\x64UserToRoomRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07room_id\x18\x02 \x01(\t\"(\n\x15\x41\x64\x64UserToRoomResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"=\n\x19RemoveUserFromRoomRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07room_id\x18\x02 \x01(\t\"-\n\x1aRemoveUserFromRoomResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"(\n\x15GetUsersInRoomRequest\x12\x0f\n\x07room_id\x18\x01 \x01(\t\"7\n\x16GetUsersInRoomResponse\x12\x1d\n\x05users\x18\x01 \x03(\x0b\x32\x0e.database.User2\xfd\x06\n\x0f\x44\x61tabaseService\x12@\n\x07\x41\x64\x64Room\x12\x18.database.AddRoomRequest\x1a\x19.database.AddRoomResponse\"\x00\x12@\n\x07GetRoom\x12\x18.database.GetRoomRequest\x1a\x19.database.GetRoomResponse\"\x00\x12L\n\x0bGetAllRooms\x12\x1c.database.GetAllRoomsRequest\x1a\x1d.database.GetAllRoomsResponse\"\x00\x12\x46\n\tAddDevice\x12\x1a.database.AddDeviceRequest\x1a\x1b.database.AddDeviceResponse\"\x00\x12[\n\x10GetDevicesInRoom\x12!.database.GetDevicesInRoomRequest\x1a\".database.GetDevicesInRoomResponse\"\x00\x12@\n\x07\x41\x64\x64User\x12\x18.database.AddUserRequest\x1a\x19.database.AddUserResponse\"\x00\x12@\n\x07GetUser\x12\x18.database.GetUserRequest\x1a\x19.database.GetUserResponse\"\x00\x12\x61\n\x12SetUserPreferences\x12#.database.SetUserPreferencesRequest\x1a$.database.SetUserPreferencesResponse\"\x00\x12R\n\rAddUserToRoom\x12\x1e.database.AddUserToRoomRequest\x1a\x1f.database.AddUserToRoomResponse\"\x00\x12\x61\n\x12RemoveUserFromRoom\x12#.database.RemoveUserFromRoomRequest\x1a$.database.RemoveUserFromRoomResponse\"\x00\x12U\n\x0eGetUsersInRoom\x12\x1f.database.GetUsersInRoomRequest\x1a .database.GetUsersInRoomResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19\x61pp/protos/database.proto\x12\x08\x64\x61tabase\" \n\x04Room\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"\"\n\x06\x44\x65vice\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"4\n\nPreference\x12\x13\n\x0btemperature\x18\x01 \x01(\x02\x12\x11\n\tfan_speed\x18\x02 \x01(\x05\"a\n\x04User\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12.\n\x0bpreferences\x18\x03 \x01(\x0b\x32\x14.database.PreferenceH\x00\x88\x01\x01\x42\x0e\n\x0c_preferences\".\n\x0e\x41\x64\x64RoomRequest\x12\x1c\n\x04room\x18\x01 \x01(\x0b\x32\x0e.database.Room\"/\n\x0f\x41\x64\x64RoomResponse\x12\x1c\n\x04room\x18\x01 \x01(\x0b\x32\x0e.database.Room\"\x1c\n\x0eGetRoomRequest\x12\n\n\x02id\x18\x01 \x01(\t\"/\n\x0fGetRoomResponse\x12\x1c\n\x04room\x18\x01 \x01(\x0b\x32\x0e.database.Room\"\x14\n\x12GetAllRoomsRequest\"4\n\x13GetAllRoomsResponse\x12\x1d\n\x05rooms\x18\x01 \x03(\x0b\x32\x0e.database.Room\"%\n\x12GetUserRoomRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"A\n\x13GetUserRoomResponse\x12!\n\x04room\x18\x01 \x01(\x0b\x32\x0e.database.RoomH\x00\x88\x01\x01\x42\x07\n\x05_room\"E\n\x10\x41\x64\x64\x44\x65viceRequest\x12\x0f\n\x07room_id\x18\x01 \x01(\t\x12 \n\x06\x64\x65vice\x18\x02 \x01(\x0b\x32\x10.database.Device\"5\n\x11\x41\x64\x64\x44\x65viceResponse\x12 \n\x06\x64\x65vice\x18\x01 \x01(\x0b\x32\x10.database.Device\"*\n\x17GetDevicesInRoomRequest\x12\x0f\n\x07room_id\x18\x01 \x01(\t\"=\n\x18GetDevicesInRoomResponse\x12!\n\x07\x64\x65vices\x18\x01 \x03(\x0b\x32\x10.database.Device\".\n\x0e\x41\x64\x64UserRequest\x12\x1c\n\x04user\x18\x01 \x01(\x0b\x32\x0e.database.User\"/\n\x0f\x41\x64\x64UserResponse\x12\x1c\n\x04user\x18\x01 \x01(\x0b\x32\x0e.database.User\"\x1c\n\x0eGetUserRequest\x12\n\n\x02id\x18\x01 \x01(\t\"/\n\x0fGetUserResponse\x12\x1c\n\x04user\x18\x01 \x01(\x0b\x32\x0e.database.User\"W\n\x19SetUserPreferencesRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12)\n\x0bpreferences\x18\x02 \x01(\x0b\x32\x14.database.Preference\"G\n\x1aSetUserPreferencesResponse\x12)\n\x0bpreferences\x18\x01 \x01(\x0b\x32\x14.database.Preference\"8\n\x14\x41\x64\x64UserToRoomRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07room_id\x18\x02 \x01(\t\"(\n\x15\x41\x64\x64UserToRoomResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"=\n\x19RemoveUserFromRoomRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07room_id\x18\x02 \x01(\t\"-\n\x1aRemoveUserFromRoomResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"(\n\x15GetUsersInRoomRequest\x12\x0f\n\x07room_id\x18\x01 \x01(\t\"7\n\x16GetUsersInRoomResponse\x12\x1d\n\x05users\x18\x01 \x03(\x0b\x32\x0e.database.User2\xcb\x07\n\x0f\x44\x61tabaseService\x12@\n\x07\x41\x64\x64Room\x12\x18.database.AddRoomRequest\x1a\x19.database.AddRoomResponse\"\x00\x12@\n\x07GetRoom\x12\x18.database.GetRoomRequest\x1a\x19.database.GetRoomResponse\"\x00\x12L\n\x0bGetAllRooms\x12\x1c.database.GetAllRoomsRequest\x1a\x1d.database.GetAllRoomsResponse\"\x00\x12\x46\n\tAddDevice\x12\x1a.database.AddDeviceRequest\x1a\x1b.database.AddDeviceResponse\"\x00\x12[\n\x10GetDevicesInRoom\x12!.database.GetDevicesInRoomRequest\x1a\".database.GetDevicesInRoomResponse\"\x00\x12@\n\x07\x41\x64\x64User\x12\x18.database.AddUserRequest\x1a\x19.database.AddUserResponse\"\x00\x12@\n\x07GetUser\x12\x18.database.GetUserRequest\x1a\x19.database.GetUserResponse\"\x00\x12\x61\n\x12SetUserPreferences\x12#.database.SetUserPreferencesRequest\x1a$.database.SetUserPreferencesResponse\"\x00\x12R\n\rAddUserToRoom\x12\x1e.database.AddUserToRoomRequest\x1a\x1f.database.AddUserToRoomResponse\"\x00\x12\x61\n\x12RemoveUserFromRoom\x12#.database.RemoveUserFromRoomRequest\x1a$.database.RemoveUserFromRoomResponse\"\x00\x12U\n\x0eGetUsersInRoom\x12\x1f.database.GetUsersInRoomRequest\x1a .database.GetUsersInRoomResponse\"\x00\x12L\n\x0bGetUserRoom\x12\x1c.database.GetUserRoomRequest\x1a\x1d.database.GetUserRoomResponse\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'app.protos.database_pb2', globals())
@@ -40,38 +40,42 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _GETALLROOMSREQUEST._serialized_end=458
   _GETALLROOMSRESPONSE._serialized_start=460
   _GETALLROOMSRESPONSE._serialized_end=512
-  _ADDDEVICEREQUEST._serialized_start=514
-  _ADDDEVICEREQUEST._serialized_end=583
-  _ADDDEVICERESPONSE._serialized_start=585
-  _ADDDEVICERESPONSE._serialized_end=638
-  _GETDEVICESINROOMREQUEST._serialized_start=640
-  _GETDEVICESINROOMREQUEST._serialized_end=682
-  _GETDEVICESINROOMRESPONSE._serialized_start=684
-  _GETDEVICESINROOMRESPONSE._serialized_end=745
-  _ADDUSERREQUEST._serialized_start=747
-  _ADDUSERREQUEST._serialized_end=793
-  _ADDUSERRESPONSE._serialized_start=795
-  _ADDUSERRESPONSE._serialized_end=842
-  _GETUSERREQUEST._serialized_start=844
-  _GETUSERREQUEST._serialized_end=872
-  _GETUSERRESPONSE._serialized_start=874
-  _GETUSERRESPONSE._serialized_end=921
-  _SETUSERPREFERENCESREQUEST._serialized_start=923
-  _SETUSERPREFERENCESREQUEST._serialized_end=1010
-  _SETUSERPREFERENCESRESPONSE._serialized_start=1012
-  _SETUSERPREFERENCESRESPONSE._serialized_end=1083
-  _ADDUSERTOROOMREQUEST._serialized_start=1085
-  _ADDUSERTOROOMREQUEST._serialized_end=1141
-  _ADDUSERTOROOMRESPONSE._serialized_start=1143
-  _ADDUSERTOROOMRESPONSE._serialized_end=1183
-  _REMOVEUSERFROMROOMREQUEST._serialized_start=1185
-  _REMOVEUSERFROMROOMREQUEST._serialized_end=1246
-  _REMOVEUSERFROMROOMRESPONSE._serialized_start=1248
-  _REMOVEUSERFROMROOMRESPONSE._serialized_end=1293
-  _GETUSERSINROOMREQUEST._serialized_start=1295
-  _GETUSERSINROOMREQUEST._serialized_end=1335
-  _GETUSERSINROOMRESPONSE._serialized_start=1337
-  _GETUSERSINROOMRESPONSE._serialized_end=1392
-  _DATABASESERVICE._serialized_start=1395
-  _DATABASESERVICE._serialized_end=2288
+  _GETUSERROOMREQUEST._serialized_start=514
+  _GETUSERROOMREQUEST._serialized_end=551
+  _GETUSERROOMRESPONSE._serialized_start=553
+  _GETUSERROOMRESPONSE._serialized_end=618
+  _ADDDEVICEREQUEST._serialized_start=620
+  _ADDDEVICEREQUEST._serialized_end=689
+  _ADDDEVICERESPONSE._serialized_start=691
+  _ADDDEVICERESPONSE._serialized_end=744
+  _GETDEVICESINROOMREQUEST._serialized_start=746
+  _GETDEVICESINROOMREQUEST._serialized_end=788
+  _GETDEVICESINROOMRESPONSE._serialized_start=790
+  _GETDEVICESINROOMRESPONSE._serialized_end=851
+  _ADDUSERREQUEST._serialized_start=853
+  _ADDUSERREQUEST._serialized_end=899
+  _ADDUSERRESPONSE._serialized_start=901
+  _ADDUSERRESPONSE._serialized_end=948
+  _GETUSERREQUEST._serialized_start=950
+  _GETUSERREQUEST._serialized_end=978
+  _GETUSERRESPONSE._serialized_start=980
+  _GETUSERRESPONSE._serialized_end=1027
+  _SETUSERPREFERENCESREQUEST._serialized_start=1029
+  _SETUSERPREFERENCESREQUEST._serialized_end=1116
+  _SETUSERPREFERENCESRESPONSE._serialized_start=1118
+  _SETUSERPREFERENCESRESPONSE._serialized_end=1189
+  _ADDUSERTOROOMREQUEST._serialized_start=1191
+  _ADDUSERTOROOMREQUEST._serialized_end=1247
+  _ADDUSERTOROOMRESPONSE._serialized_start=1249
+  _ADDUSERTOROOMRESPONSE._serialized_end=1289
+  _REMOVEUSERFROMROOMREQUEST._serialized_start=1291
+  _REMOVEUSERFROMROOMREQUEST._serialized_end=1352
+  _REMOVEUSERFROMROOMRESPONSE._serialized_start=1354
+  _REMOVEUSERFROMROOMRESPONSE._serialized_end=1399
+  _GETUSERSINROOMREQUEST._serialized_start=1401
+  _GETUSERSINROOMREQUEST._serialized_end=1441
+  _GETUSERSINROOMRESPONSE._serialized_start=1443
+  _GETUSERSINROOMRESPONSE._serialized_end=1498
+  _DATABASESERVICE._serialized_start=1501
+  _DATABASESERVICE._serialized_end=2472
 # @@protoc_insertion_point(module_scope)

@@ -27,7 +27,8 @@ class InfluxDBServicer(influxdb_pb2_grpc.InfluxdbServiceServicer):
                     .tag("device_id", request.measurement.device_id)
                     .field("value", request.measurement.temperature)
                 )
-                write_api = self.influxdb_client.write_api(write_options=SYNCHRONOUS)
+                write_api = self.influxdb_client.write_api(
+                    write_options=SYNCHRONOUS)
                 write_api.write(bucket=INFLUXDB_BUCKET, record=point)
             if request.HasField("humidity"):
                 point = (
@@ -36,7 +37,8 @@ class InfluxDBServicer(influxdb_pb2_grpc.InfluxdbServiceServicer):
                     .tag("device_id", request.measurement.device_id)
                     .field("value", request.measurement.humidity)
                 )
-                write_api = self.influxdb_client.write_api(write_options=SYNCHRONOUS)
+                write_api = self.influxdb_client.write_api(
+                    write_options=SYNCHRONOUS)
                 write_api.write(bucket=INFLUXDB_BUCKET, record=point)
         except Exception as e:
             self.__rpc_context_set(context, grpc.StatusCode.INTERNAL, str(e))

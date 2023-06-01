@@ -69,6 +69,11 @@ class DatabaseServiceStub(object):
                 request_serializer=app_dot_protos_dot_database__pb2.GetUsersInRoomRequest.SerializeToString,
                 response_deserializer=app_dot_protos_dot_database__pb2.GetUsersInRoomResponse.FromString,
                 )
+        self.GetUserRoom = channel.unary_unary(
+                '/database.DatabaseService/GetUserRoom',
+                request_serializer=app_dot_protos_dot_database__pb2.GetUserRoomRequest.SerializeToString,
+                response_deserializer=app_dot_protos_dot_database__pb2.GetUserRoomResponse.FromString,
+                )
 
 
 class DatabaseServiceServicer(object):
@@ -140,6 +145,12 @@ class DatabaseServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetUserRoom(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_DatabaseServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -197,6 +208,11 @@ def add_DatabaseServiceServicer_to_server(servicer, server):
                     servicer.GetUsersInRoom,
                     request_deserializer=app_dot_protos_dot_database__pb2.GetUsersInRoomRequest.FromString,
                     response_serializer=app_dot_protos_dot_database__pb2.GetUsersInRoomResponse.SerializeToString,
+            ),
+            'GetUserRoom': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetUserRoom,
+                    request_deserializer=app_dot_protos_dot_database__pb2.GetUserRoomRequest.FromString,
+                    response_serializer=app_dot_protos_dot_database__pb2.GetUserRoomResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -392,5 +408,22 @@ class DatabaseService(object):
         return grpc.experimental.unary_unary(request, target, '/database.DatabaseService/GetUsersInRoom',
             app_dot_protos_dot_database__pb2.GetUsersInRoomRequest.SerializeToString,
             app_dot_protos_dot_database__pb2.GetUsersInRoomResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetUserRoom(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/database.DatabaseService/GetUserRoom',
+            app_dot_protos_dot_database__pb2.GetUserRoomRequest.SerializeToString,
+            app_dot_protos_dot_database__pb2.GetUserRoomResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

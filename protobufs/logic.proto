@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package logic;
+
+service LogicService {
+  rpc NotifyUserPreferenceChange (NotifyUserPreferenceChangeRequest) returns (NotifyUserPreferenceChangeResponse) {}
+  rpc NotifyUserRoomChange (NotifyUserRoomChangeRequest) returns (NotifyUserRoomChangeResponse) {}
+}
+
+message NotifyUserPreferenceChangeRequest {
+  string user_id = 1;
+}
+
+message NotifyUserPreferenceChangeResponse {
+  string user_id = 1;
+}
+
+message NotifyUserRoomChangeRequest {
+  string user_id = 1;
+  string room_id = 2;
+}
+
+message NotifyUserRoomChangeResponse {
+  string user_id = 1;
+  string room_id = 2;
+}
