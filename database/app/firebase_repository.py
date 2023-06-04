@@ -1,3 +1,4 @@
+import os
 import firebase_admin
 from firebase_admin import credentials, db
 from typing import Dict, List, Optional, Any
@@ -8,9 +9,13 @@ from .exceptions import *
 databaseURL = "https://microservices-dc985-default-rtdb.europe-west1.firebasedatabase.app/"
 
 
+
 class FirebaseRepository(DatabaseRepository):
     def __init__(self):
-        cred = credentials.Certificate("pbl5-firebase-admin-key.json")
+        cred = credentials.Certificate(os.path.join(
+            os.path.dirname(__file__), 
+            "pbl5-firebase-admin-key.json")
+        )
         firebase_admin.initialize_app(
             cred,
             {"databaseURL": databaseURL},
@@ -35,7 +40,10 @@ class FirebaseRepository(DatabaseRepository):
     def get_all_rooms(self) -> List[Dict[str, Any]]:
         ref = db.reference(f"rooms")
         rooms = ref.get()
-        return [{"id": room_id, "name": room["name"]} for room_id, room in rooms.items()]
+        if rooms is None:
+            return []
+        else:
+            return [{"id": room_id, "name": room["name"]} for room_id, room in rooms.items()]
 
     def add_device(self, room_id: str, device: Dict[str, Any]) -> Dict[str, Any]:
         # Check if room exists
@@ -57,16 +65,20 @@ class FirebaseRepository(DatabaseRepository):
         return device
 
     def get_devices_in_room(self, room_id: str) -> List[Dict[str, Any]]:
-        ref = db.reference(f"rooms_devices/{room_id}")
-        dev_ids = ref.get()
-        if dev_ids is None:
+        room_ref = db.reference(f"rooms/{room_id}")
+        if room_ref.get() is None:
             raise RoomNotFoundError(f"Room {room_id} does not exist")
+        
+        room_devices_ref = db.reference(f"rooms_devices/{room_id}")
+        dev_ids = room_devices_ref.get()
+        if dev_ids is None:
+            return []
 
         devices = []
-        for dev_id in dev_ids:
+        for dev_id in dev_ids.keys():
             ref = db.reference(f"devices/{dev_id}")
             device = ref.get()
-            devices.append(device)
+            devices.append({"id": dev_id, "name": device["name"]})
 
         return devices
 
@@ -144,6 +156,8 @@ class FirebaseRepository(DatabaseRepository):
         ref = db.reference(f"room_users/{room_id}")
         user_ids = ref.get()
         users = []
+        if user_ids is None:
+            return users
         for user_id in user_ids:
             ref = db.reference(f"users/{user_id}")
             user = ref.get()

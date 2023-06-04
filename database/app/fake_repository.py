@@ -90,3 +90,6 @@ class FakeRepository(DatabaseRepository):
         if room_id in self.room_users:
             return [self.users[user_id] for user_id in self.room_users[room_id]]
         return []
+    
+    def get_user_room(self, user_id: str) -> Dict[str, Any]:
+        return {}

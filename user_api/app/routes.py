@@ -12,23 +12,27 @@ from .protos import (
     logic_pb2_grpc,
 )
 from .schemas import *
+import logging
+from typing import Callable
 
 BASE_URL = "/api/v1"
 
 router = APIRouter(prefix=BASE_URL)
 
-database_channel = grpc.insecure_channel("database_service:50051")
 influxdb_channel = grpc.insecure_channel("influxdb_service:50051")
-mqtt_channel = grpc.insecure_channel("mqtt_service:50051")
-logic_channel = grpc.insecure_channel("mqtt_service:50051")
-
-database_stub = database_pb2_grpc.DatabaseServiceStub(database_channel)
 influxdb_stub = influxdb_pb2_grpc.InfluxdbServiceStub(influxdb_channel)
-mqtt_stub = mqtt_pb2_grpc.MqttServiceStub(mqtt_channel)
+
+logic_channel = grpc.insecure_channel("logic_service:50051")
 logic_stub = logic_pb2_grpc.LogicServiceStub(logic_channel)
 
+database_channel = grpc.insecure_channel("database_service:50051")
+database_stub = database_pb2_grpc.DatabaseServiceStub(database_channel)
 
-def grpc_call(call_func: callable, request, success_callback: callable):
+mqtt_channel = grpc.insecure_channel("mqtt_service:50051")
+mqtt_stub = mqtt_pb2_grpc.MqttServiceStub(mqtt_channel)
+
+
+def grpc_call(call_func: Callable, request, success_callback: Callable):
     try:
         response = call_func(request)
         return success_callback(response)
@@ -217,6 +221,13 @@ def post_user_preference(uid: str, preference: PreferenceSchema) -> PreferenceSc
             temperature=response.preferences.temperature,
             fan_speed=response.preferences.fan_speed,
         )
+    
+    try:
+        request = logic_pb2.NotifyUserPreferenceChangeRequest(user_id=uid)
+        response = logic_stub.NotifyUserPreferenceChange(request)
+        logging.info(response)
+    except Exception as e:
+        logging.error(e)
 
     return grpc_call(
         call_func=database_stub.SetUserPreferences,
@@ -236,8 +247,12 @@ def add_user_to_room(room_id: str, user_id: str) -> str:
     def success_callback(response: database_pb2.AddUserToRoomResponse):
         return response.user_id
 
-    grpc_call(call_func=logic_stub.NotifyUserRoomChange,
-              request=logic_pb2.NotifyUserRoomChangeRequest(user_id=user_id, room_id=room_id))
+    try:
+        request = logic_pb2.NotifyUserRoomChangeRequest(user_id=user_id, room_id=room_id)
+        response = logic_stub.NotifyUserRoomChange(request)
+        logging.info(response)
+    except Exception as e:
+        logging.error(e)
 
     return grpc_call(
         call_func=database_stub.AddUserToRoom,
@@ -265,9 +280,13 @@ def get_users_in_room(room_id: str) -> list:
 def remove_user_from_room(room_id: str, user_id: str) -> str:
     def success_callback(response: database_pb2.RemoveUserFromRoomResponse):
         return response.user_id
-
-    grpc_call(call_func=logic_stub.NotifyUserRoomChange,
-              request=logic_pb2.NotifyUserRoomChangeRequest(user_id=user_id, room_id=room_id))
+    
+    try:
+        request = logic_pb2.NotifyUserRoomChangeRequest(user_id=user_id, room_id=room_id)
+        response = logic_stub.NotifyUserRoomChange(request)
+        logging.info(response)
+    except Exception as e:
+        logging.error(e)
 
     return grpc_call(
         call_func=database_stub.RemoveUserFromRoom,

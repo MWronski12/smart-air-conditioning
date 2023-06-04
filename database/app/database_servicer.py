@@ -158,12 +158,12 @@ class DatabaseServicer(database_pb2_grpc.DatabaseServiceServicer):
             ]
         )
 
-    def GetUserRoom(self, request, context):
+    def GetUserRoom(self, request: database_pb2.GetUserRoomRequest, context):
         try:
             room = self.repository.get_user_room(request.user_id)
         except RoomNotFoundError as e:
             self.__rpc_context_set(context, grpc.StatusCode.NOT_FOUND, str(e))
-            return database_pb2.GetUsersInRoomResponse()
+            return database_pb2.GetUserRoomResponse()
 
         ret = database_pb2.Room(
             id=room["id"],
