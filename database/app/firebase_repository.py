@@ -5,13 +5,15 @@ from typing import Dict, List, Optional, Any
 from .database_repository import DatabaseRepository
 from .exceptions import *
 
+databaseURL = "https://microservices-dc985-default-rtdb.europe-west1.firebasedatabase.app/"
+
 
 class FirebaseRepository(DatabaseRepository):
     def __init__(self):
         cred = credentials.Certificate("pbl5-firebase-admin-key.json")
         firebase_admin.initialize_app(
             cred,
-            {"databaseURL": "https://pbl5-5d9d2-default-rtdb.europe-west1.firebasedatabase.app/"},
+            {"databaseURL": databaseURL},
         )
 
     def add_room(self, room: Dict[str, Any]) -> Dict[str, Any]:
