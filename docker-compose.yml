@@ -12,8 +12,8 @@ services:
     build:
       context: mqtt
       dockerfile: Dockerfile
-      depends_on:
-        - mqtt_broker
+    depends_on:
+      - mqtt_broker
     ports:
       - "8001:50051"
 
@@ -24,14 +24,14 @@ services:
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
 
-  influxdb_service:
-    build:
-      context: influxdb
-      dockerfile: Dockerfile
-    environment:
-      - INFLUXDB_HOST=${INFLUXDB_HOST} INFLUXDB_TOKEN=${INFLUXDB_TOKEN} INFLUXDB_ORG=${INFLUXDB_ORG} INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
-    ports:
-      - "8002:50051"
+  # influxdb_service:
+  #   build:
+  #     context: influxdb
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - INFLUXDB_HOST=${INFLUXDB_HOST} INFLUXDB_TOKEN=${INFLUXDB_TOKEN} INFLUXDB_ORG=${INFLUXDB_ORG} INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
+  #   ports:
+  #     - "8002:50051"
 
   logic_service:
     build:

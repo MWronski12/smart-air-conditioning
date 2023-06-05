@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Response
 import grpc
 import uuid
 from .protos import (
@@ -13,7 +13,7 @@ from .protos import (
 )
 from .schemas import *
 import logging
-from typing import Callable
+from typing import Callable, Optional, Any, Dict
 
 BASE_URL = "/api/v1"
 
@@ -155,7 +155,8 @@ def add_room(room: str) -> RoomSchema:
 def get_devices_in_room(room_id: str) -> list:
     def success_callback(response: database_pb2.GetDevicesInRoomResponse):
         return [
-            {"id": device.id, "name": device.name, "room": room_id} for device in response.devices
+            {"id": device.id, "name": device.name, "room": room_id}
+            for device in response.devices
         ]
 
     return grpc_call(
@@ -168,7 +169,9 @@ def get_devices_in_room(room_id: str) -> list:
 @router.post("/rooms/{room_id}/devices", status_code=status.HTTP_201_CREATED)
 def register_device(room_id: str, device: DeviceSchema) -> DeviceSchema:
     def success_callback(response: database_pb2.AddDeviceResponse):
-        return DeviceSchema(id=response.device.id, name=response.device.name, room=room_id)
+        return DeviceSchema(
+            id=response.device.id, name=response.device.name, room=room_id
+        )
 
     return grpc_call(
         call_func=database_stub.AddDevice,
@@ -217,17 +220,17 @@ def get_user(uid: str) -> UserSchema:
 @router.post("/users/{uid}/preferences", status_code=status.HTTP_201_CREATED)
 def post_user_preference(uid: str, preference: PreferenceSchema) -> PreferenceSchema:
     def success_callback(response: database_pb2.SetUserPreferencesResponse):
+        try:
+            req = logic_pb2.NotifyUserPreferenceChangeRequest(user_id=uid)
+            res = logic_stub.NotifyUserPreferenceChange(req)
+            logging.info(res)
+        except Exception as e:
+            logging.error(e)
+
         return PreferenceSchema(
             temperature=response.preferences.temperature,
             fan_speed=response.preferences.fan_speed,
         )
-    
-    try:
-        request = logic_pb2.NotifyUserPreferenceChangeRequest(user_id=uid)
-        response = logic_stub.NotifyUserPreferenceChange(request)
-        logging.info(response)
-    except Exception as e:
-        logging.error(e)
 
     return grpc_call(
         call_func=database_stub.SetUserPreferences,
@@ -245,14 +248,16 @@ def post_user_preference(uid: str, preference: PreferenceSchema) -> PreferenceSc
 @router.post("/rooms/{room_id}/users", status_code=status.HTTP_201_CREATED)
 def add_user_to_room(room_id: str, user_id: str) -> str:
     def success_callback(response: database_pb2.AddUserToRoomResponse):
-        return response.user_id
+        try:
+            req = logic_pb2.NotifyUserRoomChangeRequest(
+                user_id=user_id, room_id=room_id
+            )
+            res = logic_stub.NotifyUserRoomChange(req)
+            logging.info(res)
+        except Exception as e:
+            logging.error(e)
 
-    try:
-        request = logic_pb2.NotifyUserRoomChangeRequest(user_id=user_id, room_id=room_id)
-        response = logic_stub.NotifyUserRoomChange(request)
-        logging.info(response)
-    except Exception as e:
-        logging.error(e)
+        return response.user_id
 
     return grpc_call(
         call_func=database_stub.AddUserToRoom,
@@ -276,17 +281,31 @@ def get_users_in_room(room_id: str) -> list:
     )
 
 
+@router.get("/users/{user_id}/room")
+def get_user_room(user_id: str):
+    def success_callback(response: database_pb2.GetUserRoomResponse):
+        return RoomSchema(id=response.room.id, name=response.room.name)
+
+    return grpc_call(
+        call_func=database_stub.GetUserRoom,
+        request=database_pb2.GetUserRoomRequest(user_id=user_id),
+        success_callback=success_callback,
+    )
+
+
 @router.delete("/rooms/{room_id}/users/{user_id}")
 def remove_user_from_room(room_id: str, user_id: str) -> str:
     def success_callback(response: database_pb2.RemoveUserFromRoomResponse):
+        try:
+            req = logic_pb2.NotifyUserRoomChangeRequest(
+                user_id=user_id, room_id=room_id
+            )
+            res = logic_stub.NotifyUserRoomChange(req)
+            logging.info(res)
+        except Exception as e:
+            logging.error(e)
+
         return response.user_id
-    
-    try:
-        request = logic_pb2.NotifyUserRoomChangeRequest(user_id=user_id, room_id=room_id)
-        response = logic_stub.NotifyUserRoomChange(request)
-        logging.info(response)
-    except Exception as e:
-        logging.error(e)
 
     return grpc_call(
         call_func=database_stub.RemoveUserFromRoom,
