@@ -22,6 +22,7 @@ def update_room_preferences(room_id):
 
     devices = get_devices_in_room(room_id=room_id).devices
     for device in devices:
+        logging.info(f"Updating device {device.id} settings")
         settings = mqtt_pb2.Settings(
             room_id=room_id,
             device_id=device.id,

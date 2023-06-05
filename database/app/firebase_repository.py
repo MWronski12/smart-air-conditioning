@@ -7,16 +7,12 @@ from .database_repository import DatabaseRepository
 from .exceptions import *
 import logging
 
-databaseURL = (
-    "https://microservices-dc985-default-rtdb.europe-west1.firebasedatabase.app/"
-)
+databaseURL = "https://pbl5-5d9d2-default-rtdb.europe-west1.firebasedatabase.app/"
 
 
 class FirebaseRepository(DatabaseRepository):
     def __init__(self):
-        cred = credentials.Certificate(
-            os.path.join(os.path.dirname(__file__), "pbl5-firebase-admin-key.json")
-        )
+        cred = credentials.Certificate("pbl5-firebase-admin-key.json")
         firebase_admin.initialize_app(
             cred,
             {"databaseURL": databaseURL},
@@ -44,9 +40,7 @@ class FirebaseRepository(DatabaseRepository):
         if rooms is None:
             return []
         else:
-            return [
-                {"id": room_id, "name": room["name"]} for room_id, room in rooms.items()
-            ]
+            return [{"id": room_id, "name": room["name"]} for room_id, room in rooms.items()]
 
     def add_device(self, room_id: str, device: Dict[str, Any]) -> Dict[str, Any]:
         # Check if room exists
@@ -113,9 +107,7 @@ class FirebaseRepository(DatabaseRepository):
 
         return {"id": user_id, "email": user["email"]}
 
-    def set_user_preferences(
-        self, user_id: str, preferences: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def set_user_preferences(self, user_id: str, preferences: Dict[str, Any]) -> Dict[str, Any]:
         ref = db.reference(f"users/{user_id}")
         if ref.get() is None:
             raise UserNotFoundError(f"User {user_id} does not exist")

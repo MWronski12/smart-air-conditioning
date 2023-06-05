@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import grpc
 import logging
+import json
 
 from .protos import influxdb_pb2, influxdb_pb2_grpc
 from .config import *
@@ -16,6 +17,7 @@ class MqttClient:
         self.username = username
         self.password = password
         self.connect()
+        self.subscribe("pbl6/+/+/sensor")
 
     def connect(self):
         self.client.connect(MQTT_HOST, MQTT_PORT)
@@ -29,21 +31,32 @@ class MqttClient:
 
     def on_message(self, client, userdata, message):
         # Topic format:
-        # pbl6/<room_id>/<device_id>/sensor/<data_type>
-        # data_type: humidity, temperature
+        # pbl6/<room_id>/<device_id>/sensor
+        # Payload format:
+        # {"temperature": 25.0, "humidity": 50.0}
 
         topic = message.topic.split("/")
         payload = message.payload.decode("utf-8")
 
         room_id = topic[1]
         device_id = topic[2]
-        data_type = topic[4]
 
-        logging.info(f"Received message from {room_id}/{device_id}/{data_type}: {payload}")
+        logging.info(f"Received message from {room_id}/{device_id}: {payload}")
+        temperature = json.loads(payload)["temperature"]
+        humidity = json.loads(payload)["humidity"]
 
         channel = grpc.insecure_channel("influxdb_service:50051")
         stub = influxdb_pb2_grpc.InfluxdbServiceStub(channel)
-        stub.WriteMeasurement()
+        stub.WriteMeasurement(
+            influxdb_pb2.WriteMeasurementRequest(
+                measurement=influxdb_pb2.Measurement(
+                    room_id=room_id,
+                    device_id=device_id,
+                    temperature=temperature,
+                    humidity=humidity,
+                )
+            )
+        )
 
     def on_publish(self, client, userdata, mid):
         logging.info(f"Message {mid} published")

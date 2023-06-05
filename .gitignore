@@ -158,3 +158,4 @@ cython_debug/
 # Project specific files
 private.py
 pbl5-firebase-admin-key.json
+*.env
