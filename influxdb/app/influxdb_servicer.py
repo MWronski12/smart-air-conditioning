@@ -51,22 +51,28 @@ class InfluxDBServicer(influxdb_pb2_grpc.InfluxdbServiceServicer):
             and r.room_id == "{request.room_id}")'
 
         tables = self.influxdb_client.query_api().query(org=INFLUXDB_ORG, query=query)
+
         temperature_list = list()
         humidity_list = list()
-
         measurements = list()
 
         for table in tables:
-            measurement = influxdb_pb2.Measurement()
             for record in table.records:
-                data_type = record.get_field()
+                data_type = record.get_measurement()
                 timestamp = record.get_time()
                 if data_type == "temperature":
-                    measurement.temperature = record.get_value()
+                    temperature_list.append(record.get_value())
                 elif data_type == "humidity":
-                    measurement.humidity = record.get_value()
-            measurements.append(measurement)
+                    humidity_list.append(record.get_value())
 
-        logging.info(f"Sending measurements: {measurements}")
+        for temp, hum in zip(temperature_list, humidity_list):
+            measurements.append(
+                influxdb_pb2.Measurement(
+                    room_id=request.room_id,
+                    device_id=request.device_id,
+                    temperature=temp,
+                    humidity=hum,
+                )
+            )
 
         return influxdb_pb2.ReadMeasurementsResponse(measurement=measurements)
