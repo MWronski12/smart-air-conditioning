@@ -293,7 +293,7 @@ def get_user_room(user_id: str):
     )
 
 
-@router.delete("/rooms/{room_id}/users/{user_id}")
+@router.delete("/rooms/{room_id}/users")
 def remove_user_from_room(room_id: str, user_id: str) -> str:
     def success_callback(response: database_pb2.RemoveUserFromRoomResponse):
         try:
